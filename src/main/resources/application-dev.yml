@@ -3,7 +3,7 @@ app:
   environment: dev
 
 server:
-  port: 8082
+  port: 8080
   # 开启优雅停机
   shutdown: graceful
   servlet:
@@ -22,9 +22,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/spba?serverTimezone=UTC&useUniode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+      url: jdbc:mysql://localhost:3306/tradeform?serverTimezone=UTC&useUniode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
       username: root
-      password: abc123456
+      password: 1319shuxkmi
       # 初始连接数
       initial-size: 2
       # 最小连接池数量
@@ -98,12 +98,12 @@ sa-token:
   # 是否输出操作日志
   is-log: false
 
-# 自定义配置
-spba:
-  ip:
-  domain-name:
-  storage-url:
-  qiniu:
-    bucket-name:
-    access-key:
-    secret-key:
+## 自定义配置
+#spba:
+#  ip:
+#  domain-name:
+#  storage-url:
+#  qiniu:
+#    bucket-name:
+#    access-key:
+#    secret-key:
