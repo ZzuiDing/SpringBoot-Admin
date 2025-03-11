@@ -1,7 +1,7 @@
 package com.example.spba.controller;
 
 import com.example.spba.utils.AsyncTask;
-import com.example.spba.utils.QiniuUtil;
+//import com.example.spba.utils.QiniuUtil;
 import com.example.spba.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,44 +26,44 @@ public class CommonController
      * @return
      * @throws IOException
      */
-    @PostMapping("/image/upload")
-    public R imageUpload(MultipartFile file,
-                         @RequestParam(name = "type", defaultValue = "public") String type) throws IOException
-    {
-        if (file == null) {
-            return R.error("请上传图片");
-        }
-        String[] limit = {"image/jpeg", "image/jpg", "image/png", "image/gif"};
-
-        String imageType = file.getContentType();
-        if (!Arrays.asList(limit).contains(imageType)) {
-            return R.error("请上传jpeg|png|gif中任意一种格式的图片");
-        }
-
-        // 上传图片至七牛云
-        String path = QiniuUtil.uploadImageByFile((FileInputStream) file.getInputStream(), type);
-        if (path == null) {
-            return R.error("上传失败，请稍后重试");
-        }
-
-        HashMap data = new HashMap<>();
-        data.put("path", path);
-
-        return R.success(data);
-    }
+//    @PostMapping("/image/upload")
+//    public R imageUpload(MultipartFile file,
+//                         @RequestParam(name = "type", defaultValue = "public") String type) throws IOException
+//    {
+//        if (file == null) {
+//            return R.error("请上传图片");
+//        }
+//        String[] limit = {"image/jpeg", "image/jpg", "image/png", "image/gif"};
+//
+//        String imageType = file.getContentType();
+//        if (!Arrays.asList(limit).contains(imageType)) {
+//            return R.error("请上传jpeg|png|gif中任意一种格式的图片");
+//        }
+//
+//        // 上传图片至七牛云
+//        String path = QiniuUtil.uploadImageByFile((FileInputStream) file.getInputStream(), type);
+//        if (path == null) {
+//            return R.error("上传失败，请稍后重试");
+//        }
+//
+//        HashMap data = new HashMap<>();
+//        data.put("path", path);
+//
+//        return R.success(data);
+//    }
 
     /**
      * 获取七牛token，用于前端vue上传视频至七牛云
      * @return
      */
-    @GetMapping("/qiniu/token")
-    public HashMap getQiniuToken()
-    {
-        HashMap data = new HashMap<>();
-        data.put("upToken", QiniuUtil.getToken());
-
-        return data;
-    }
+//    @GetMapping("/qiniu/token")
+//    public HashMap getQiniuToken()
+//    {
+//        HashMap data = new HashMap<>();
+//        data.put("upToken", QiniuUtil.getToken());
+//
+//        return data;
+//    }
 
     /**
      * 异步任务测试方法1

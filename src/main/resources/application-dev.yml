@@ -8,6 +8,9 @@ server:
   shutdown: graceful
   servlet:
     context-path: /spba-api
+    encoding:
+      charset: utf-8
+      force: true
 
 spring:
   lifecycle:
@@ -65,7 +68,10 @@ spring:
   elasticsearch:
     rest:
       uris: 127.0.0.1:9200
-
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
 # mybatis-plus配置
 mybatis-plus:
   # xml扫描，多个目录用逗号或者分号分隔（告诉 Mapper 所对应的 XML 文件位置）
@@ -107,3 +113,4 @@ sa-token:
 #    bucket-name:
 #    access-key:
 #    secret-key:
+

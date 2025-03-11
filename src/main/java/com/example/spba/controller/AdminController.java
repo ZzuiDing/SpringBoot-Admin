@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 @Validated
 @RestController
+@RequestMapping("/admin")
 public class AdminController
 {
 
