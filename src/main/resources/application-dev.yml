@@ -3,7 +3,7 @@ app:
   environment: dev
 
 server:
-  port: 8080
+  port: 9090
   # 开启优雅停机
   shutdown: graceful
   servlet:
@@ -72,6 +72,8 @@ spring:
     restart:
       enabled: true
       additional-paths: src/main/java
+  config:
+    import: classpath:application-local.yml
 # mybatis-plus配置
 mybatis-plus:
   # xml扫描，多个目录用逗号或者分号分隔（告诉 Mapper 所对应的 XML 文件位置）
@@ -113,4 +115,11 @@ sa-token:
 #    bucket-name:
 #    access-key:
 #    secret-key:
+alioss:
+  bucketName : ${local.alioss.bucketName}
+  endpoint : ${local.alioss.endpoint}
+  accessKeySecret : ${local.alioss.accessKeySecret}
+  accessKeyId : ${local.alioss.accessKeyId}
+  ARN : ${local.alioss.ARN}
+
 
