@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.spba.dao.UserMapper">
+    <insert id="insertUser" parameterType="com.example.spba.domain.entity.User">
+        INSERT INTO users (name, passwd, email, phone, address, gender, image, wealth)
+        VALUES (#{name}, #{passwd}, #{email}, #{phone}, #{address}, #{gender}, #{image}, #{wealth});
+    </insert>
+
     <select id="getPasswd" resultType="java.lang.String">
         SELECT passwd FROM users WHERE name = #{name}
     </select>

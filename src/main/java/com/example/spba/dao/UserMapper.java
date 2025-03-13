@@ -9,4 +9,6 @@ public interface UserMapper {
     String getPasswd(String name);
 
     User getUser(String name);
+
+    int insertUser(User user);
 }
