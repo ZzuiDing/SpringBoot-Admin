@@ -5,11 +5,26 @@
         INSERT INTO users (name, passwd, email, phone, address, gender, image, wealth)
         VALUES (#{name}, #{passwd}, #{email}, #{phone}, #{address}, #{gender}, #{image}, #{wealth});
     </insert>
+    <update id="updateUserInfo">
+        UPDATE users
+        SET <if test="passwd != null">passwd = #{passwd},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender}</if>
+            <if test="image != null">, image = #{image}</if>
+            <if test="wealth != null">, wealth = #{wealth}</if>
+            where id = #{id}
+    </update>
 
     <select id="getPasswd" resultType="java.lang.String">
         SELECT passwd FROM users WHERE name = #{name}
     </select>
     <select id="getUser" resultType="com.example.spba.domain.entity.User">
         select* from users where name= #{name};
+    </select>
+    <select id="selectById" resultType="com.example.spba.domain.entity.User">
+        SELECT * FROM users WHERE id = #{id}
     </select>
 </mapper>

@@ -8,4 +8,8 @@ public interface UserService {
     R checkLogin(User user);
 
     boolean register(UserDTO userDTO);
+
+    UserDTO getUserInfo(int userid);
+
+    boolean updateUserInfo(UserDTO userDTO);
 }

@@ -49,4 +49,32 @@ public class UserServiceImpl implements UserService {
         user.setImage(userDTO.getImage());
         return userMapper.insertUser(user) > 0;
     }
+
+    @Override
+    public UserDTO getUserInfo(int userid) {
+        User user = userMapper.selectById(userid);
+        if (user == null) {
+            return null;
+        }
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setPasswd(user.getPasswd());
+        userDTO.setPhone(user.getPhone());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setGender(user.getGender());
+        userDTO.setImage(user.getImage());
+        return userDTO;
+    }
+
+    @Override
+    public boolean updateUserInfo(UserDTO userDTO) {
+        try {
+            userMapper.updateUserInfo(userDTO);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 }

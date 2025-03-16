@@ -29,16 +29,17 @@ public class UserController {
 
     /**
      * 用户登录
+     *
      * @param request
      * @param user
      * @return
      */
     @PostMapping("/login")
-    public R login(HttpServletRequest request,@RequestBody User user) {
+    public R login(HttpServletRequest request, @RequestBody User user) {
         if (user.getName() == null || user.getPasswd() == null) {
             return R.error("用户名或密码不能为空");
         }
-        if(userService.checkLogin(user).getCode()==200) {
+        if (userService.checkLogin(user).getCode() == 200) {
             log.info("登录成功");
             return R.success("登录成功");
         }
@@ -47,13 +48,14 @@ public class UserController {
 
     /**
      * 用户注册
+     *
      * @param userDTO
      * @return
      */
     @Transactional
     @PostMapping("/register")
     public R register(@RequestBody @Validated(UserDTO.Save.class) UserDTO userDTO) {
-        if(userService.register(userDTO)) {
+        if (userService.register(userDTO)) {
             log.info("注册成功");
             return R.success("注册成功");
         }
@@ -61,14 +63,30 @@ public class UserController {
     }
 
     @RequestMapping("/dologin")
-    public String doLogin(){
+    public String doLogin() {
         log.info("当前会话是否登录：" + StpUtil.isLogin() + StpUtil.getLoginId());
-        return "当前会话是否登录：" + StpUtil.isLogin()+StpUtil.getLoginId();
+        return "当前会话是否登录：" + StpUtil.isLogin() + StpUtil.getLoginId();
     }
+
     @RequestMapping("/logout")
-    public String logout(){
+    public String logout() {
         StpUtil.logout();
         log.info("退出成功");
         return "退出成功";
+    }
+
+    @RequestMapping("/getUserInfo/{Userid}")
+    public R getUserInfo(int Userid) {
+        UserDTO userDTO = userService.getUserInfo(Userid);
+        return R.success(userDTO);
+    }
+
+    @RequestMapping("/updateUserInfo")
+    public R updateUserInfo(@RequestBody @Validated(UserDTO.Update.class) UserDTO userDTO) {
+        if (userService.updateUserInfo(userDTO)) {
+            log.info("更新成功");
+            return R.success("更新成功");
+        }
+        return R.error("更新失败");
     }
 }

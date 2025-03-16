@@ -105,4 +105,12 @@ package com.example.spba.controller;
             goodsService.list(new QueryWrapper<Good>().eq("category", category));
             return "商品分类";
         }
+
+        @RequestMapping("/GoodListByUserId")
+        public R getGoodListByUserId(@RequestParam(defaultValue = "1") Integer pageNum,
+                                     @RequestParam(defaultValue = "10") Integer pageSize,
+                @RequestParam Integer userId) {
+            IPage<Good> goods = goodsService.getGoodListByUserId(pageNum,pageSize,userId);
+            return R.success(goods);
+        }
     }

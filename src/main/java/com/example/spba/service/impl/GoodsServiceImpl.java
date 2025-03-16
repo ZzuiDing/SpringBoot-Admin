@@ -9,8 +9,6 @@ import com.example.spba.service.GoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements GoodsService {
     @Autowired
@@ -18,8 +16,16 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
 
     @Override
     public IPage<Good> getGoodList(Integer pageNum, Integer pageSize) {
-        Page<Good> page = new Page<>(pageNum, pageSize,false);
+        Page<Good> page = new Page<>(pageNum, pageSize,true);
         return goodsMapper.selectPage(page,null);
+    }
+
+    //todo 根据用户id查询商品列表
+    @Override
+    public IPage<Good> getGoodListByUserId(Integer pageNum, Integer pageSize, Integer id) {
+        Page<Good> page = new Page<>(pageNum,pageSize,id);
+//        return goodsMapper.selectPage(page,id);
+        return null;
     }
 
 
