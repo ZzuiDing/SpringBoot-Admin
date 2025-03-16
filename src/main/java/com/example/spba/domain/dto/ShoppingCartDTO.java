@@ -17,7 +17,8 @@ public class ShoppingCartDTO {
     @NotNull(message = "用户ID不能为空")
     private Integer userId;
 
-    private String content;
+    @NotBlank(message = "商品ID不能为空")
+    private String goodId;
 
     @Min(value = 1, message = "商品数量不能小于1")
     private Integer num;

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class ShoppingCart {
     private Integer id;
     private Integer userId;
-    private String content;
+    private String goodId;
     private Integer num;
     private LocalDateTime date;
 
