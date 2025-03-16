@@ -9,6 +9,7 @@ public class Address {
     private String name;
     private String phone;
     private String desc;
+    private Integer userId;
 
     // Getters and Setters
 }
