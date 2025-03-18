@@ -37,6 +37,11 @@ public class OrderDTO {
 
     private String expressId;
 
+    @Min(value = 1, message = "订单数量必须大于等于1")
+    private String amount;
+
+    private String addressId;
+
     public interface Save {
     }
 

@@ -16,6 +16,8 @@ public class Order {
     private String payMethod;
     private BigDecimal payAmount;
     private String expressId;
+    private Integer amount;
+    private Integer addressId;
 
     // Getters and Setters
 }
