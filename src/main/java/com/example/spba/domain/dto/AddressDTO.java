@@ -24,6 +24,9 @@ public class AddressDTO {
 
     private String desc;
 
+    @NotNull(message = "用户ID不能为空")
+    private Integer userId;
+
     public interface Save {
     }
 
