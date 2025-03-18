@@ -1,5 +1,6 @@
 package com.example.spba.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,9 +24,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
     //todo 根据用户id查询商品列表
     @Override
     public IPage<Good> getGoodListByUserId(Integer pageNum, Integer pageSize, Integer id) {
-        Page<Good> page = new Page<>(pageNum,pageSize,id);
-//        return goodsMapper.selectPage(page,id);
-        return null;
+//        Page<Good> page = new Page<>(pageNum,pageSize,id);
+//        IPage<Good> goodIPage = goodsMapper.selectPageByUserId(pageNum, pageSize, id);
+        Page<Good> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Good> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Good::getUserId, id).orderByDesc(Good::getId);
+        return goodsMapper.selectPage(page, wrapper);
+//        return null;
     }
 
 

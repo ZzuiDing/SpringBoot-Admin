@@ -109,8 +109,9 @@ package com.example.spba.controller;
         @RequestMapping("/GoodListByUserId")
         public R getGoodListByUserId(@RequestParam(defaultValue = "1") Integer pageNum,
                                      @RequestParam(defaultValue = "10") Integer pageSize,
-                @RequestParam Integer userId) {
-            IPage<Good> goods = goodsService.getGoodListByUserId(pageNum,pageSize,userId);
-            return R.success(goods);
+                                     @RequestParam Integer userId) {
+//            IPage<Good> goods = goodsService.getGoodListByUserId(pageNum,pageSize,userId);
+            IPage<Good> goodList = goodsService.getGoodListByUserId(userId, pageNum, pageSize);
+            return R.success(goodList);
         }
     }

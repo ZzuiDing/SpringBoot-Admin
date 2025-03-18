@@ -8,5 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface GoodsMapper extends BaseMapper<Good> {
-    List listGoods();
+//    List listGoods();
+
+    List<Good> selectPageByUserId(Integer pageNum, Integer pageSize, Integer id);
 }
