@@ -16,4 +16,6 @@ public interface OrderService extends IService<Order> {
     IPage<Order> getBySellerId(Integer pageNum, Integer pageSize, Integer userId);
 
     IPage<Order> getByBuyerId(Integer pageNum, Integer pageSize, Integer buyerId);
+
+//    List<Integer> getIdsByUserId(int sellerid);
 }
