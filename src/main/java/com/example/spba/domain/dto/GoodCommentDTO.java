@@ -24,6 +24,9 @@ public class GoodCommentDTO {
     @Max(value = 5, message = "评分最大值为5")
     private Integer stars;
 
+    @NotNull(message = "商品ID不能为空")
+    private  Integer goodId;
+
     public interface Save {
     }
 

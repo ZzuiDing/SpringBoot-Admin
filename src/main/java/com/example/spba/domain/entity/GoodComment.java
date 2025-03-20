@@ -9,6 +9,6 @@ public class GoodComment {
     private String desc;
     private String pictLocation;
     private Integer stars;
-
+    private  Integer goodId;
     // Getters and Setters
 }
