@@ -10,4 +10,5 @@ import com.example.spba.domain.entity.Kind;
 */
 public interface KindService extends IService<Kind> {
 
+    void getList(int pagenum, int pagesize);
 }

@@ -16,4 +16,8 @@ import org.springframework.stereotype.Service;
 public class KindServiceImpl extends ServiceImpl<KindMapper, Kind>
 implements KindService{
 
+    @Override
+    public void getList(int pagenum, int pagesize) {
+
+    }
 }

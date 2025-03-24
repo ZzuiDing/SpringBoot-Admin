@@ -16,6 +16,7 @@ public class Kind {
      */
     @TableField(value = "kind")
     private String kind;
+    private String Kind_Id;
 
     @Override
     public boolean equals(Object that) {

@@ -57,7 +57,7 @@ public class WebController {
     //OSS基础信息 替换为实际的 bucket 名称、 region-id、host。
     String bucket = "skyaccesss";
     String region = "cn-beijing";
-    String host = "sts.cn-beijing.aliyuncs.com";
+    String host = "skyaccesss.oss-cn-beijing.aliyuncs.com";
     // 设置上传回调URL（即回调服务器地址），必须为公网地址。用于处理应用服务器与OSS之间的通信，OSS会在文件上传完成后，把文件上传信息通过此回调URL发送给应用服务器。
     //限定上传到OSS的文件前缀。
     String upload_dir = "dir";
