@@ -58,6 +58,13 @@
             <version>0.3.4</version>
         </dependency>
 
+        <!-- Ali Payment -->
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>4.34.0.ALL</version>
+        </dependency>
+
         <dependency>
             <groupId>com.aliyun.kms</groupId>
             <artifactId>kms-transfer-client</artifactId>

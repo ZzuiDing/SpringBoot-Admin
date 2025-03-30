@@ -121,5 +121,11 @@ alioss:
   accessKeySecret : ${local.alioss.accessKeySecret}
   accessKeyId : ${local.alioss.accessKeyId}
   ARN : ${local.alioss.ARN}
-
+ali-pay:
+  merchant-private-key : ${local.ali-pay.merchant-private-key}
+  ali-pay-public-key : ${local.ali-pay.ali-pay-public-key}
+  appId: ${local.ali-pay.app-id}
+  gateway-url: ${local.ali-pay.gateway-url}
+  notify-url: ${local.ali-pay.notify-url}
+  return-url: ${local.ali-pay.return-url}
 
