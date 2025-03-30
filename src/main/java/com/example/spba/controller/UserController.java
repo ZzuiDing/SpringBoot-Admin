@@ -3,7 +3,6 @@ package com.example.spba.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.example.spba.domain.dto.UserDTO;
-import com.example.spba.domain.entity.User;
 import com.example.spba.service.UserService;
 import com.example.spba.utils.R;
 import lombok.extern.log4j.Log4j;
@@ -13,8 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotBlank;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -70,10 +67,10 @@ public class UserController {
     }
 
     @RequestMapping("/logout")
-    public String logout() {
+    public R logout() {
         StpUtil.logout();
         log.info("退出成功");
-        return "退出成功";
+        return R.success("退出成功");
     }
 
     @RequestMapping("/getUserInfo/{Userid}")

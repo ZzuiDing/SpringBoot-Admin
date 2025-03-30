@@ -32,6 +32,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional
     @Override
     public Boolean createOrder(List<Integer> CartIds, Integer addressId) {
+        boolean success = false;
         try {
             for (Integer cartId : CartIds) {
                 Order order = new Order();
@@ -41,23 +42,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Good good = goodService.getById(shoppingCart.getGoodId());
                 order.setSeller(good.getUserId());
                 order.setDate(LocalDateTime.now());
-//            order.setStatus("0");
                 order.setAmount(shoppingCart.getNum());
                 order.setAddressId(addressId);
 
-                //todo: 接入支付API
                 this.save(order);
-                return true;
+                success = true;
             }
+            // 事务成功，清除购物车
+            shoppingCartService.removeByIds(CartIds);
         } catch (Exception e) {
-            throw new RuntimeException("Order creation failed: " + e.getMessage());
-        } finally {
-            for (Integer cartId : CartIds) {
-                shoppingCartService.removeById(cartId);
-            }
+            throw new RuntimeException("订单创建失败：" + e.getMessage());
         }
-        return false;
+        return success;
     }
+
 
     @Override
     public IPage<Order> getBySellerId(Integer pageNum, Integer pageSize, Integer userId) {
