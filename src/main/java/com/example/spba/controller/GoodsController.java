@@ -1,5 +1,6 @@
 package com.example.spba.controller;
 
+    import cn.dev33.satoken.stp.StpUtil;
     import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
     import com.baomidou.mybatisplus.core.metadata.IPage;
     import com.example.spba.domain.entity.Good;
@@ -42,6 +43,8 @@ package com.example.spba.controller;
          */
         @RequestMapping("/add")
         public R addGoods(@RequestBody Good good) {
+            int userId = StpUtil.getLoginIdAsInt();
+            good.setUserId(userId);
             goodsService.save(good);
             return R.success("添加商品成功");
         }
