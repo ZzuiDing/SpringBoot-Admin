@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>服务端生成签名上传文件到OSS</title>
+</head>
+<body>
+<div class="container">
+    <form>
+        <div class="mb-3">
+            <label for="file" class="form-label">选择文件:</label>
+            <input type="file" class="form-control" id="file" name="file" required/>
+        </div>
+        <button type="submit" class="btn btn-primary">上传</button>
+    </form>
+    <div id="callback-info" class="mt-3" style="display: none;">
+        <h4>回调信息:</h4>
+        <pre id="callback-content"></pre>
+    </div>
+    <p>
+        https://skyaccesss.oss-cn-beijing.aliyuncs.com/r69csf40_8cc25c2438315083140042c4a36bdba9141e93402e505d2d2d263c6573662a15.png</p>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector("form");
+        const fileInput = document.querySelector("#file");
+        const callbackInfo = document.querySelector("#callback-info");
+        const callbackContent = document.querySelector("#callback-content");
+        const imagePreview = document.createElement("img"); // 创建 img 元素
+        imagePreview.style.maxWidth = "300px"; // 限制图片大小
+        imagePreview.style.display = "none"; // 默认隐藏
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('请选择一个文件再上传。');
+                return;
+            }
+
+            // 生成随机字符串 + SHA-256 哈希值 + 文件后缀
+            const getHashedFilename = async (file) => {
+                const fileBuffer = await file.arrayBuffer(); // 获取文件数据
+                const hashBuffer = await crypto.subtle.digest("SHA-256", fileBuffer); // 计算SHA-256哈希
+                const hashArray = Array.from(new Uint8Array(hashBuffer)); // 转换为字节数组
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // 转换为十六进制字符串
+                const randomString = Math.random().toString(36).substr(2, 8); // 生成随机字符串
+                const fileExt = file.name.split('.').pop(); // 获取文件后缀
+                return `${randomString}_${hashHex}.${fileExt}`; // 拼接最终的文件名
+            };
+
+            const filename = await getHashedFilename(file); // 生成新文件名
+
+            fetch("http://localhost:9090/spba-api/get_post_signature_for_oss_upload", {method: "GET"})
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("获取签名失败");
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    let formData = new FormData();
+                    formData.append("success_action_status", "200");
+                    formData.append("policy", data.policy);
+                    formData.append("x-oss-signature", data.signature);
+                    formData.append("x-oss-signature-version", "OSS4-HMAC-SHA256");
+                    formData.append("x-oss-credential", data.x_oss_credential);
+                    formData.append("x-oss-date", data.x_oss_date);
+                    formData.append("key", data.dir + filename); // 使用新文件名
+                    formData.append("x-oss-security-token", data.security_token);
+                    formData.append("file", file); // file 必须为最后一个表单域
+                    console.log("上传的文件名：", filename);
+                    return fetch("http://" + data.host, {
+                        method: "POST",
+                        body: formData
+                    });
+                })
+                .then((response) => {
+                    if (response.ok) {
+                        console.log("上传成功");
+                        alert("文件已上传");
+
+                        // 显示图片
+                        const imageUrl = `https://skyaccesss.oss-cn-beijing.aliyuncs.com/dir${filename}`;
+                        imagePreview.src = imageUrl;
+                        imagePreview.style.display = "block";
+
+                        return response.json();  // 解析回调信息
+                    } else {
+                        console.log("上传失败", response);
+                        alert("上传失败，请稍后再试");
+                    }
+                })
+                .then((callbackData) => {
+                    if (callbackData) {
+                        callbackContent.textContent = JSON.stringify(callbackData, null, 2);
+                        callbackInfo.style.display = "block";
+                    }
+                })
+                .catch((error) => {
+                    console.error("发生错误:", error);
+                });
+        });
+
+        // 将图片显示区域添加到页面
+        document.body.appendChild(imagePreview);
+    });
+</script>
+</body>
+</html>
