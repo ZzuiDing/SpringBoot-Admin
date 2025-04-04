@@ -25,7 +25,7 @@ public class GoodDTO {
     private BigDecimal price;
 
     private String picture;
-    private String kind;
+    private String kindId;
     private String keyWord;
     private String desc;
     private String status;

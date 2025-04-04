@@ -9,6 +9,7 @@ import com.example.spba.utils.R;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -137,5 +138,10 @@ public class GraceExceptionHandler
     @ExceptionHandler({NotRoleException.class})
     public R notRoleExceptionHandler(NotRoleException e) {
         return R.error("暂无权限");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public R handleForeignKeyConstraintViolation(DataIntegrityViolationException ex) {
+        return R.error("删除失败：该种类已被其他数据引用，无法删除。");
     }
 }

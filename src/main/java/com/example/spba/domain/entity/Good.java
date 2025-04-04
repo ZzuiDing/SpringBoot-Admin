@@ -12,7 +12,7 @@ public class Good {
     private String name;
     private BigDecimal price;
     private String picture;
-    private String kind;
+    private int kindId;
     private String keyWord;
     @TableField("`desc`")
     private String desc;

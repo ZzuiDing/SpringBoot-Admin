@@ -1,7 +1,9 @@
 package com.example.spba.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.spba.domain.entity.Kind;
 import com.example.spba.service.KindService;
+import com.example.spba.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +20,10 @@ public class KindController {
     KindService kindService;
 
     @RequestMapping("/getAll")
-    public List<Kind> getAll(@RequestParam int pagenum, @RequestParam int pagesize) {
-        kindService.getList(pagenum,pagesize);
-        return kindService.list();
+    public R getAll(@RequestParam(defaultValue = "1") Integer pageNum,
+                    @RequestParam(defaultValue = "10") Integer pageSize) {
+        IPage<Kind> kindIPage = kindService.getList(pageNum,pageSize);
+        return R.success(kindIPage);
     }
 
     @RequestMapping("/getById")
@@ -29,11 +32,11 @@ public class KindController {
     }
 
     @RequestMapping("/add")
-    public boolean add(@RequestBody String name) {
-        Kind kind = new Kind();
-        kind.setKind(name);
-        return kindService.save(kind);
+    public boolean add(@RequestBody Kind kind) {
+        System.out.println("Received kindName: " + kind.getKindName());  // 输出接收到的 kindName
+        return kindService.save(kind);  // 保存 Kind 对象
     }
+
 
     @RequestMapping("/update")
     public boolean update(@RequestBody Kind kind) {
@@ -41,8 +44,10 @@ public class KindController {
     }
 
     @RequestMapping("/delete")
-    public boolean delete(@RequestParam Long id) {
-        return kindService.removeById(id);
+    public R delete(@RequestParam Long id) {
+            kindService.removeById(id);
+            return R.success("删除成功");
+
     }
 
     @RequestMapping("/deleteBatch")

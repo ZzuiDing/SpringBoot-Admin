@@ -1,54 +1,19 @@
 package com.example.spba.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-/**
- * 商品种类
- * @TableName kind
- */
-@TableName(value ="kind")
 @Data
+@TableName("kind") // 确保实体类和数据库表匹配
 public class Kind {
-    /**
-     * 
-     */
-    @TableField(value = "kind")
-    private String kind;
-    private String Kind_Id;
+    @TableId(type = IdType.AUTO) // 显式指定数据库字段
+    private Long id; // 修改为 Integer，确保类型匹配
 
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (that == null) {
-            return false;
-        }
-        if (getClass() != that.getClass()) {
-            return false;
-        }
-        Kind other = (Kind) that;
-        return (this.getKind() == null ? other.getKind() == null : this.getKind().equals(other.getKind()));
-    }
+    @TableField("kind_name")
+    private String kindName; // 修改为 camelCase
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((getKind() == null) ? 0 : getKind().hashCode());
-        return result;
-    }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", kind=").append(kind);
-        sb.append("]");
-        return sb.toString();
-    }
 }

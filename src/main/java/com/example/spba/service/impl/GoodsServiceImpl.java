@@ -21,7 +21,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
         return goodsMapper.selectPage(page,null);
     }
 
-    //todo 根据用户id查询商品列表
     @Override
     public IPage<Good> getGoodListByUserId(Integer pageNum, Integer pageSize, Integer id) {
 //        Page<Good> page = new Page<>(pageNum,pageSize,id);
