@@ -1,6 +1,7 @@
 package com.example.spba.domain.dto;
 
 
+import com.example.spba.domain.entity.User;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -10,7 +11,7 @@ import java.math.BigDecimal;
  * 用户 DTO（数据传输对象）
  */
 @Data
-public class UserDTO {
+public class UserDTO extends User {
 
     @NotNull(message = "用户ID不能为空", groups = Update.class)
     @Min(value = 1, message = "用户ID必须大于0", groups = Update.class)

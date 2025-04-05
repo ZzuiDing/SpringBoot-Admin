@@ -3,6 +3,7 @@ package com.example.spba.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.example.spba.domain.dto.UserDTO;
+import com.example.spba.domain.entity.User;
 import com.example.spba.service.UserService;
 import com.example.spba.utils.R;
 import lombok.extern.log4j.Log4j;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 
@@ -81,7 +83,7 @@ public class UserController {
 
     @RequestMapping("/updateUserInfo")
     public R updateUserInfo(@RequestBody @Validated(UserDTO.Update.class) UserDTO userDTO) {
-        if (userService.updateUserInfo(userDTO)) {
+        if (userService.updateById(userDTO)) {
             log.info("更新成功");
             return R.success("更新成功");
         }
@@ -100,5 +102,33 @@ public class UserController {
         UserDTO userInfo1 = userService.getUserInfo(Integer.parseInt(loginIdByToken.toString()));
 //        userInfo.put("token", StpUtil.getTokenValue());
         return R.success(JSON.parse(JSON.toJSONString(userInfo1)));
+    }
+
+    @RequestMapping("/getUserNames")
+    public R getUserNames() {
+        List<User> list = userService.list();
+        String[] usernames = new String[list.size()];
+//        usernames = usernames
+        for (User user : list) {
+            log.info(user.getName());
+            usernames[list.indexOf(user)] = user.getName();
+        }
+        return R.success(usernames);
+    }
+
+    @RequestMapping("/getUserList")
+    public R getUserList() {
+        List<User> list = userService.list();
+        return R.success(list);
+    }
+
+    @RequestMapping("/deleteUser")
+    public R deleteUser(@RequestParam(name = "id") Integer id) {
+//        int id = userId.get("id");
+        if (userService.removeById(id)) {
+            log.info("删除成功");
+            return R.success("删除成功");
+        }
+        return R.error("删除失败");
     }
 }

@@ -2,6 +2,7 @@ package com.example.spba.service.impl;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.spba.dao.UserMapper;
 import com.example.spba.domain.dto.UserDTO;
 import com.example.spba.domain.entity.User;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService {
     @Autowired
     private UserMapper userMapper;
 
