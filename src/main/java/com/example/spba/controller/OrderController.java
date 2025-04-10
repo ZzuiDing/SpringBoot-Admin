@@ -91,4 +91,11 @@ public class OrderController {
         }
         return R.error("取消失败，订单状态不允许取消");
     }
+
+    @RequestMapping("/getOrderList")
+    public R getOrderList(@RequestParam(defaultValue = "1") Integer pageNum,
+                          @RequestParam(defaultValue = "10") Integer pageSize) {
+        List<Order> orders =  orderService.list();
+        return R.success(orders);
+    }
 }

@@ -37,6 +37,8 @@ public class UserDTO extends User {
 
     private BigDecimal wealth;
 
+    private Integer role;
+
     public interface Save {
     }
 

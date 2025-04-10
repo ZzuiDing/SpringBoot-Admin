@@ -111,10 +111,26 @@ package com.example.spba.controller;
 
         @RequestMapping("/GoodListByUserId")
         public R getGoodListByUserId(@RequestParam(defaultValue = "1") Integer pageNum,
-                                     @RequestParam(defaultValue = "10") Integer pageSize,
-                                     @RequestParam Integer userId) {
+                                     @RequestParam(defaultValue = "10") Integer pageSize) {
 //            IPage<Good> goods = goodsService.getGoodListByUserId(pageNum,pageSize,userId);
-            IPage<Good> goodList = goodsService.getGoodListByUserId(userId, pageNum, pageSize);
+            int userId = StpUtil.getLoginIdAsInt();
+            IPage<Good> goodList = goodsService.getGoodListByUserId(pageNum, pageSize, userId);
             return R.success(goodList);
+        }
+
+        @RequestMapping("/newestGoods")
+        public R getNewestGoods(@RequestParam(defaultValue = "1") Integer pageNum,
+                                @RequestParam(defaultValue = "10") Integer pageSize,
+                                @RequestParam(defaultValue = "4") Integer num) {
+            IPage<Good> goods = goodsService.getNewestGoods(pageNum, pageSize,num);
+            return R.success(goods);
+        }
+
+        @RequestMapping("/topSoldGoods")
+        public R getTopSoldGoods(@RequestParam(defaultValue = "1") Integer pageNum,
+                                  @RequestParam(defaultValue = "10") Integer pageSize,
+                                  @RequestParam(defaultValue = "4") Integer num) {
+            IPage<Good> goods = goodsService.getTopSoldGoods(pageNum, pageSize,num);
+            return R.success(goods);
         }
     }

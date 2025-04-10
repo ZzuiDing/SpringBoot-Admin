@@ -1,11 +1,15 @@
 package com.example.spba.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+@TableName("orders")
 @Data
 public class Order {
     @TableId(type = IdType.AUTO)
@@ -13,6 +17,7 @@ public class Order {
     private Integer buyer;
     private Integer seller;
     private String content;
+    @TableField("`desc`")
     private String desc;
     private LocalDateTime date;
     private String status;

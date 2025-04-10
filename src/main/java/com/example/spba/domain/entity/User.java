@@ -22,5 +22,6 @@ public class User {
     private String image;
     private String passwd;
     private BigDecimal wealth;
+    private Integer role;
 
 }

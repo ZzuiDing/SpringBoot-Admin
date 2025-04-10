@@ -6,9 +6,9 @@
         SELECT * FROM good
     </select>
 
-    <select id="selectPageByUserId" resultType="com.example.spba.domain.entity.Good">
-        SELECT * FROM good WHERE user_id = #{userId}
-        order by id desc
-        LIMIT #{pageSize} OFFSET #{pageNum}
-    </select>
+<!--    <select id="selectPageByUserId" resultType="com.example.spba.domain.entity.Good">-->
+<!--        SELECT * FROM good WHERE user_id = #{userId}-->
+<!--        order by id desc-->
+<!--        LIMIT #{pageSize} OFFSET #{pageNum}-->
+<!--    </select>-->
 </mapper>

@@ -27,20 +27,20 @@ public class KindController {
     }
 
     @RequestMapping("/getById")
-    public Kind getById(@RequestParam Long id) {
-        return kindService.getById(id);
+    public R getById(@RequestParam Long id) {
+        return R.success(kindService.getById(id));
     }
 
     @RequestMapping("/add")
-    public boolean add(@RequestBody Kind kind) {
+    public R add(@RequestBody Kind kind) {
         System.out.println("Received kindName: " + kind.getKindName());  // 输出接收到的 kindName
-        return kindService.save(kind);  // 保存 Kind 对象
+        return R.success(kindService.save(kind));  // 保存 Kind 对象
     }
 
 
     @RequestMapping("/update")
-    public boolean update(@RequestBody Kind kind) {
-        return kindService.updateById(kind);
+    public R update(@RequestBody Kind kind) {
+        return R.success(kindService.updateById(kind));
     }
 
     @RequestMapping("/delete")
@@ -51,8 +51,8 @@ public class KindController {
     }
 
     @RequestMapping("/deleteBatch")
-    public boolean deleteBatch(@RequestBody List<Long> ids) {
-        return kindService.removeByIds(ids);
+    public R deleteBatch(@RequestBody List<Long> ids) {
+        return R.success(kindService.removeByIds(ids));
     }
 
 }

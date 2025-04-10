@@ -72,6 +72,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         userDTO.setAddress(user.getAddress());
         userDTO.setGender(user.getGender());
         userDTO.setImage(user.getImage());
+        userDTO.setWealth(user.getWealth());
+        userDTO.setRole(user.getRole());
         return userDTO;
     }
 
