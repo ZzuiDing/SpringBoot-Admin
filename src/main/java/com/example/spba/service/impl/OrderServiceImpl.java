@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,10 +33,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Transactional
     @Override
-    public Boolean createOrder(List<Integer> CartIds, Integer addressId) {
-        boolean success = false;
+    public List<Integer> createOrder(List<Integer> cartIds, Integer addressId) {
+        List<Integer> orderIds = new ArrayList<>();
         try {
-            for (Integer cartId : CartIds) {
+            for (Integer cartId : cartIds) {
                 Order order = new Order();
                 ShoppingCart shoppingCart = shoppingCartService.getById(cartId);
                 order.setBuyer(shoppingCart.getUserId());
@@ -44,16 +46,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setDate(LocalDateTime.now());
                 order.setAmount(shoppingCart.getNum());
                 order.setAddressId(addressId);
-
-                this.save(order);
-                success = true;
+                order.setPayAmount(good.getPrice().multiply(BigDecimal.valueOf(shoppingCart.getNum())));
+                this.save(order); // 保存后，order.getId() 会有值（MyBatis-Plus 会自动回填）
+                orderIds.add(order.getId());
             }
-            // 事务成功，清除购物车
-            shoppingCartService.removeByIds(CartIds);
+            // 清除购物车
+            shoppingCartService.removeByIds(cartIds);
         } catch (Exception e) {
             throw new RuntimeException("订单创建失败：" + e.getMessage());
         }
-        return success;
+        return orderIds;
     }
 
 

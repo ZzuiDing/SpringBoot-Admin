@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class PayServiceImpl implements PayService {
@@ -45,7 +50,7 @@ public class PayServiceImpl implements PayService {
 
 
     @Override
-    public String alipay(String orderId) throws AlipayApiException {
+    public String alipay(List<Integer> orderId) throws AlipayApiException {
         AlipayConfig alipayConfig = new AlipayConfig();
         alipayConfig.setPrivateKey(alipayLocalConfig.getMerchantprivatekey());
         alipayConfig.setAlipayPublicKey(alipayLocalConfig.getAlipayPublicKey());
@@ -55,7 +60,7 @@ public class PayServiceImpl implements PayService {
 
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
         AlipayTradePagePayModel model = new AlipayTradePagePayModel();
-        model.setOutTradeNo(orderId);
+        model.setOutTradeNo(orderId.toString());
         model.setTotalAmount("88.88");
         model.setSubject("Iphone6 16G");
         model.setProductCode("FAST_INSTANT_TRADE_PAY");
@@ -101,39 +106,92 @@ public class PayServiceImpl implements PayService {
 //        boolean flag = AlipaySignature.rsaCheckV1(params, alipayLocalConfig.getAlipayPublicKey(), charset, "RSA2");
 //    }
 
-    public String createPay(int orderid) {
+//    public String createPay(int orderid) {
+//
+//        Order orderInfo = orderService.getById(orderid);
+//        //请求
+//        AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+//        //数据
+//        AlipayTradePagePayModel bizModel = new AlipayTradePagePayModel();
+//        bizModel.setOutTradeNo(String.valueOf(orderid));
+//        //单位是元
+//        bizModel.setTotalAmount("11");
+////        bizModel.setSubject(orderInfo.getTitle());
+//        //默认的
+//        bizModel.setProductCode("FAST_INSTANT_TRADE_PAY");
+//        request.setBizModel(bizModel);
+//        request.setNotifyUrl(notifyUrl + "/pay/order/pay-signal");
+//        //用户支付后支付宝会以GET方法请求returnUrl,并且携带out_trade_no,trade_no,total_amount等参数.
+//
+//        request.setReturnUrl(returnUrl);
+//        AlipayTradePagePayResponse response = null;
+//        try {
+//            //完成签名并执行请求
+//            response = alipayClient.pageExecute(request);
+//            if (response.isSuccess()) {
+//                log.debug("调用成功");
+//                return response.getBody();
+//            } else {
+//                log.error("调用失败");
+//                log.error(response.getMsg());
+//                return null;
+//            }
+//        } catch (AlipayApiException e) {
+//            log.error("调用异常");
+//            return null;
+//        }
+//    }
+public String createPay(List<Integer> orderIds) throws AlipayApiException {
+    List<Order> orderList = (List<Order>) orderService.listByIds(orderIds);
+    if (orderList.isEmpty()) {
+        log.error("无有效订单");
+        return null;
+    }
 
-        Order orderInfo = orderService.getById(orderid);
-        //请求
-        AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-        //数据
-        AlipayTradePagePayModel bizModel = new AlipayTradePagePayModel();
-        bizModel.setOutTradeNo(String.valueOf(orderid));
-        //单位是元
-        bizModel.setTotalAmount("11");
-//        bizModel.setSubject(orderInfo.getTitle());
-        //默认的
-        bizModel.setProductCode("FAST_INSTANT_TRADE_PAY");
-        request.setBizModel(bizModel);
-        request.setNotifyUrl(notifyUrl + "/pay/order/pay-signal");
-        //用户支付后支付宝会以GET方法请求returnUrl,并且携带out_trade_no,trade_no,total_amount等参数.
+    AlipayConfig alipayConfig = new AlipayConfig();
+    alipayConfig.setPrivateKey(alipayLocalConfig.getMerchantprivatekey());
+    alipayConfig.setAlipayPublicKey(alipayLocalConfig.getAlipayPublicKey());
+    alipayConfig.setAppId(alipayLocalConfig.getAppId());
+    alipayConfig.setServerUrl(alipayLocalConfig.getGatewayurl());
+    AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
+    // 合并订单标题
+    String subject = "订单合并支付（共" + orderList.size() + "单）";
 
-        request.setReturnUrl(returnUrl);
-        AlipayTradePagePayResponse response = null;
-        try {
-            //完成签名并执行请求
-            response = alipayClient.pageExecute(request);
-            if (response.isSuccess()) {
-                log.debug("调用成功");
-                return response.getBody();
-            } else {
-                log.error("调用失败");
-                log.error(response.getMsg());
-                return null;
-            }
-        } catch (AlipayApiException e) {
-            log.error("调用异常");
+    // 合并金额（总金额 = 所有订单的金额之和）
+    BigDecimal total = orderList.stream()
+            .map(Order::getPayAmount)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    // 创建 Alipay 请求
+    AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
+    AlipayTradePagePayModel bizModel = new AlipayTradePagePayModel();
+
+    // 合并订单号，可用“,”拼接
+    String mergedOrderIdStr = orderIds.stream().map(String::valueOf).collect(Collectors.joining(","));
+
+    bizModel.setOutTradeNo(mergedOrderIdStr);
+    bizModel.setTotalAmount(total.toPlainString());
+    bizModel.setSubject(subject);
+    bizModel.setProductCode("FAST_INSTANT_TRADE_PAY");
+
+    request.setBizModel(bizModel);
+    request.setNotifyUrl(notifyUrl + "/pay/order/pay-signal");
+    request.setReturnUrl(returnUrl);
+
+    try {
+        AlipayTradePagePayResponse response = alipayClient.pageExecute(request);
+        if (response.isSuccess()) {
+            log.debug("合并支付调用成功");
+            return response.getBody();
+        } else {
+            log.error("合并支付失败：" + response.getMsg());
             return null;
         }
+    } catch (AlipayApiException e) {
+        log.error("调用支付宝异常", e);
+        return null;
     }
+}
+
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public interface OrderService extends IService<Order> {
 
-    Boolean createOrder(List<Integer> CartIds, Integer addressId);
+    List<Integer> createOrder(List<Integer> CartIds, Integer addressId);
 
 
     IPage<Order> getBySellerId(Integer pageNum, Integer pageSize, Integer userId);

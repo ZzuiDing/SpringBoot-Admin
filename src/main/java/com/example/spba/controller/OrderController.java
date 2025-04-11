@@ -1,6 +1,10 @@
 package com.example.spba.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.service.OrderService;
@@ -8,11 +12,13 @@ import com.example.spba.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/order")
@@ -21,12 +27,16 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
+    private AlipayClient alipayClient;
+
+    @Autowired
     private OrderService orderService;
 
     @RequestMapping("/create")
     public R createOrder(@RequestParam List<Integer> CartIds,@RequestParam Integer AddressId) {
-        if(orderService.createOrder(CartIds,AddressId)) {
-            return R.success();
+        List<Integer> order = orderService.createOrder(CartIds, AddressId);
+        if(!order.isEmpty()) {
+            return R.success(order);
         } else {
             return R.error();
         }
@@ -97,5 +107,45 @@ public class OrderController {
                           @RequestParam(defaultValue = "10") Integer pageSize) {
         List<Order> orders =  orderService.list();
         return R.success(orders);
+    }
+
+
+    @GetMapping("/order/check-pay")
+    public R checkOrderPay(@RequestParam("orderId") int orderId) {
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return R.error("订单不存在");
+        }
+
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+
+        JSONObject bizContent = new JSONObject();
+        bizContent.put("out_trade_no", String.valueOf(orderId)); // 我们系统的订单号
+
+        request.setBizContent(bizContent.toJSONString());
+
+        try {
+            AlipayTradeQueryResponse response = alipayClient.execute(request);
+            if (response.isSuccess()) {
+                String tradeStatus = response.getTradeStatus();
+                if ("TRADE_SUCCESS".equals(tradeStatus) || "TRADE_FINISHED".equals(tradeStatus)) {
+                    if (Objects.equals(order.getStatus(), "待支付")) {
+                        order.setStatus("已支付"); // 更新为已支付
+//                        order.setPayTime(new Date());
+//                        order.setPayTradeNo(response.getTradeNo());
+                        orderService.updateById(order);
+                    }
+                    System.out.println("调用成功");
+                    return R.success("订单已支付，当前状态：" + tradeStatus);
+                } else {
+                    return R.error("订单未支付，当前状态：" + tradeStatus);
+                }
+            } else {
+                return R.error("调用支付宝查询失败：" + response.getSubMsg());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.error("系统异常，查询失败");
+        }
     }
 }
