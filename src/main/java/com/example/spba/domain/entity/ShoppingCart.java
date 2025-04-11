@@ -10,7 +10,7 @@ public class ShoppingCart {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private Integer userId;
-    private String goodId;
+    private Integer goodId;
     private Integer num;
     private LocalDateTime date;
 

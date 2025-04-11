@@ -14,7 +14,6 @@ public class ShoppingCartDTO {
     @NotNull(message = "购物车ID不能为空", groups = Update.class)
     private Integer id;
 
-    @NotNull(message = "用户ID不能为空")
     private Integer userId;
 
     @NotBlank(message = "商品ID不能为空")

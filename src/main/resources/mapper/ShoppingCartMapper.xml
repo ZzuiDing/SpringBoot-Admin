@@ -3,4 +3,19 @@
 <mapper namespace="com.example.spba.dao.ShoppingCartMapper">
 
 
+    <select id="selectByGoodIdAndUserId" resultType="com.example.spba.domain.entity.ShoppingCart">
+        SELECT * FROM shopping_cart
+        WHERE good_id = #{goodId} AND user_id = #{loginIdAsInt}
+    </select>
+    <select id="selectList" resultType="com.example.spba.domain.dto.ShoppingCartForm">
+        SELECT sc.*,
+               g.price,
+               g.name,
+               g.picture
+        FROM shopping_cart sc
+                 INNER JOIN
+             good g ON sc.good_id = g.id
+        WHERE sc.user_id = #{loginIdAsInt}
+    </select>
+
 </mapper>

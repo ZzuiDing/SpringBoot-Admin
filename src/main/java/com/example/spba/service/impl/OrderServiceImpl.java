@@ -38,7 +38,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 Order order = new Order();
                 ShoppingCart shoppingCart = shoppingCartService.getById(cartId);
                 order.setBuyer(shoppingCart.getUserId());
-                order.setContent(shoppingCart.getGoodId());
+                order.setContent(String.valueOf(shoppingCart.getGoodId()));
                 Good good = goodService.getById(shoppingCart.getGoodId());
                 order.setSeller(good.getUserId());
                 order.setDate(LocalDateTime.now());

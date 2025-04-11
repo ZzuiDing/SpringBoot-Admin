@@ -1,7 +1,9 @@
 package com.example.spba.controller;
 
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.example.spba.domain.dto.ShoppingCartDTO;
+import com.example.spba.domain.dto.ShoppingCartForm;
 import com.example.spba.domain.entity.ShoppingCart;
 import com.example.spba.service.ShoppingCartService;
 import com.example.spba.utils.R;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Validated
 @RequestMapping("/ShoppingCart")
@@ -21,12 +25,13 @@ public class ShoppingCartController {
     ShoppingCartService shoppingCartService;
 
     @RequestMapping("/add")
-    public R addGoods(@RequestBody @Validated(ShoppingCartDTO.Save.class) ShoppingCart shoppingCart) {
+    public R addGoods(@RequestBody ShoppingCart shoppingCart) {
         try {
-            shoppingCartService.save(shoppingCart);
+            shoppingCartService.addItem(shoppingCart);
             return R.success("添加成功");
-        } catch (Exception e) {
-            return R.error("添加失败");
+        }
+        catch (Exception e) {
+            return R.error("添加失败"+e.getMessage());
         }
     }
 
@@ -41,12 +46,24 @@ public class ShoppingCartController {
     }
 
     @RequestMapping("/update")
-    public R updateGoods(@RequestBody @Validated(ShoppingCartDTO.Update.class) ShoppingCart shoppingCart) {
+    public R updateGoods(@RequestBody ShoppingCartForm shoppingCartForm) {
         try {
-            shoppingCartService.updateById(shoppingCart);
+            shoppingCartService.updateById(shoppingCartForm);
             return R.success("修改成功");
         } catch (Exception e) {
             return R.error("修改失败");
+        }
+    }
+
+    @RequestMapping("/get")
+    public R getGoods() {
+        int loginIdAsInt = StpUtil.getLoginIdAsInt();
+        try {
+            List<ShoppingCartForm> shoppingCart = shoppingCartService.getByUserId(loginIdAsInt);
+            System.out.println("购物车商品:" + shoppingCart);
+            return R.success(shoppingCart);
+        } catch (Exception e) {
+            return R.error("查询失败");
         }
     }
 }
