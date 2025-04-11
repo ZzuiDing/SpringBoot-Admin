@@ -12,13 +12,12 @@ import com.example.spba.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/order")
@@ -110,17 +109,20 @@ public class OrderController {
     }
 
 
-    @GetMapping("/order/check-pay")
-    public R checkOrderPay(@RequestParam("orderId") int orderId) {
-        Order order = orderService.getById(orderId);
-        if (order == null) {
-            return R.error("订单不存在");
+    @PostMapping("/order/check-pay")
+    public R checkOrderPay(@RequestBody Map<String, List<Integer>> orderIdsMap) {
+        List<Integer> orderIds = orderIdsMap.get("orderIds");
+        if (orderIds == null || orderIds.isEmpty()) {
+            return R.error("订单ID不能为空");
         }
+        List<Order> orders = (List<Order>) orderService.listByIds(orderIds);
+
+        String mergedOrderIdStr = orderIds.stream().map(String::valueOf).collect(Collectors.joining(","));
 
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
 
         JSONObject bizContent = new JSONObject();
-        bizContent.put("out_trade_no", String.valueOf(orderId)); // 我们系统的订单号
+        bizContent.put("out_trade_no", String.valueOf(mergedOrderIdStr)); // 我们系统的订单号
 
         request.setBizContent(bizContent.toJSONString());
 
@@ -129,11 +131,15 @@ public class OrderController {
             if (response.isSuccess()) {
                 String tradeStatus = response.getTradeStatus();
                 if ("TRADE_SUCCESS".equals(tradeStatus) || "TRADE_FINISHED".equals(tradeStatus)) {
-                    if (Objects.equals(order.getStatus(), "待支付")) {
+                    for (Order order : orders) {
+                        // 更新订单状态为已支付
                         order.setStatus("已支付"); // 更新为已支付
+                        if (Objects.equals(order.getStatus(), "待支付")) {
+                            order.setStatus("已支付"); // 更新为已支付
 //                        order.setPayTime(new Date());
 //                        order.setPayTradeNo(response.getTradeNo());
-                        orderService.updateById(order);
+                            orderService.updateById(order);
+                        }
                     }
                     System.out.println("调用成功");
                     return R.success("订单已支付，当前状态：" + tradeStatus);

@@ -75,9 +75,10 @@ public class UserController {
         return R.success("退出成功");
     }
 
-    @RequestMapping("/getUserInfo/{Userid}")
-    public R getUserInfo(int Userid) {
-        UserDTO userDTO = userService.getUserInfo(Userid);
+    @RequestMapping("/getUserInfo")
+    public R getUserInfo() {
+        int loginIdAsInt = StpUtil.getLoginIdAsInt();
+        UserDTO userDTO = userService.getUserInfo(loginIdAsInt);
         return R.success(userDTO);
     }
 
