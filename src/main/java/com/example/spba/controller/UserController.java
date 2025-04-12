@@ -92,15 +92,17 @@ public class UserController {
     }
 
     @RequestMapping("/userInfo")
-    public R userInfo(HttpServletRequest request, String token) {
-        log.info(token);
+    public R userInfo(HttpServletRequest request) {
+//        log.info(token);
 //        int loginIdAsInt = StpUtil.getLoginIdAsInt();
 //        Object loginIdByToken = StpUtil.getLoginIdByToken(token);
 //        log.info("当前会话是否登录：" + StpUtil.isLogin() + StpUtil.getLoginId());
 //        Map<String, Object> userInfo = new HashMap<>();
 //        userInfo.put("id", StpUtil.getLoginIdAsInt());
-        Object loginIdByToken = StpUtil.getLoginIdByToken(token);
-        UserDTO userInfo1 = userService.getUserInfo(Integer.parseInt(loginIdByToken.toString()));
+//        Object loginIdByToken = StpUtil.getLoginIdByToken(token);
+        log.info("当前会话是否登录：" + StpUtil.isLogin() + StpUtil.getLoginId());
+        int loginId = StpUtil.getLoginIdAsInt();
+        UserDTO userInfo1 = userService.getUserInfo(loginId);
 //        userInfo.put("token", StpUtil.getTokenValue());
         return R.success(JSON.parse(JSON.toJSONString(userInfo1)));
     }

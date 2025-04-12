@@ -1,6 +1,7 @@
 package com.example.spba.controller;
 
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeQueryRequest;
@@ -44,8 +45,8 @@ public class OrderController {
 
     @RequestMapping("/getFromSeller")
     public R getOrder(@RequestParam(defaultValue = "1") Integer pageNum,
-                      @RequestParam(defaultValue = "10") Integer pageSize,
-                      @RequestParam Integer SellerId) {
+                      @RequestParam(defaultValue = "10") Integer pageSize) {
+        int SellerId = StpUtil.getLoginIdAsInt();
         IPage<Order> orders =  orderService.getBySellerId(pageNum,pageSize,SellerId);
 
         return R.success(orders);
@@ -53,8 +54,8 @@ public class OrderController {
 
     @RequestMapping("/getFromBuyer")
     public R getOrderFromBuyer(@RequestParam(defaultValue = "1") Integer pageNum,
-                               @RequestParam(defaultValue = "10") Integer pageSize,
-                               @RequestParam Integer BuyerId) {
+                               @RequestParam(defaultValue = "10") Integer pageSize) {
+        int BuyerId = StpUtil.getLoginIdAsInt();
         IPage<Order> orders =  orderService.getByBuyerId(pageNum,pageSize,BuyerId);
 
         return R.success(orders);
