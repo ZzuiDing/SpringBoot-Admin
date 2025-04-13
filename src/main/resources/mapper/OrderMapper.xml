@@ -2,4 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.spba.dao.OrderMapper">
 
+<!--    <select id="selectBySellerId" resultType="com.example.spba.domain.dto.orderListDTO">-->
+<!--        select orders.*,good.name as GoodName from orders ,good-->
+<!--        where orders.content = good.id and orders.seller = #{userId}-->
+<!--        limit #{pageNum}, #{pageSize}-->
+<!--    </select>-->
+    <select id="selectBySellerId" resultType="com.example.spba.domain.dto.orderListDTO">
+        SELECT orders.*, good.name AS GoodName
+        FROM orders
+                 JOIN good ON orders.content = good.id
+        WHERE orders.seller = #{userId}
+    </select>
+
+    <select id="selectByBuyerId" resultType="com.example.spba.domain.dto.orderListDTO">
+        SELECT orders.*, good.name AS GoodName
+        FROM orders
+                 JOIN good ON orders.content = good.id
+        WHERE orders.buyer = #{userId}
+    </select>
+    <!-- Mapper.xml -->
+    <select id="countOrdersMapByStatus" resultType="java.util.HashMap">
+        SELECT status, COUNT(*) AS value
+        FROM orders
+        WHERE buyer = #{userId}
+        GROUP BY status
+    </select>
+    <select id="countOrdersMapByStatusSeller" resultType="java.util.Map">
+        SELECT status, COUNT(*) AS value
+        FROM orders
+        WHERE seller = #{userId}
+        GROUP BY status
+    </select>
+
+
 </mapper>

@@ -1,11 +1,14 @@
 package com.example.spba.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.spba.domain.dto.orderListDTO;
 import com.example.spba.domain.entity.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface OrderService extends IService<Order> {
@@ -13,9 +16,14 @@ public interface OrderService extends IService<Order> {
     List<Integer> createOrder(List<Integer> CartIds, Integer addressId);
 
 
-    IPage<Order> getBySellerId(Integer pageNum, Integer pageSize, Integer userId);
+    IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId);
 
-    IPage<Order> getByBuyerId(Integer pageNum, Integer pageSize, Integer buyerId);
+    IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer buyerId);
+
+
+    Map<String, Integer> countOrdersMapByStatus(Integer userId);
+
+    Map<String, Integer> countOrdersMapByStatusSeller(Integer userId);
 
 //    List<Integer> getIdsByUserId(int sellerid);
 }

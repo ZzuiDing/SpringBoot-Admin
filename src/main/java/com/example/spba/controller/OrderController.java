@@ -7,13 +7,19 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
+import com.example.spba.domain.entity.User;
+import com.example.spba.service.GoodsService;
 import com.example.spba.service.OrderService;
+import com.example.spba.service.UserService;
 import com.example.spba.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import com.example.spba.domain.dto.orderListDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +38,12 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private GoodsService goodsService;
+
     @RequestMapping("/create")
     public R createOrder(@RequestParam List<Integer> CartIds,@RequestParam Integer AddressId) {
         List<Integer> order = orderService.createOrder(CartIds, AddressId);
@@ -47,8 +59,7 @@ public class OrderController {
     public R getOrder(@RequestParam(defaultValue = "1") Integer pageNum,
                       @RequestParam(defaultValue = "10") Integer pageSize) {
         int SellerId = StpUtil.getLoginIdAsInt();
-        IPage<Order> orders =  orderService.getBySellerId(pageNum,pageSize,SellerId);
-
+        IPage<orderListDTO> orders =  orderService.getBySellerId(pageNum,pageSize,SellerId);
         return R.success(orders);
     }
 
@@ -56,7 +67,7 @@ public class OrderController {
     public R getOrderFromBuyer(@RequestParam(defaultValue = "1") Integer pageNum,
                                @RequestParam(defaultValue = "10") Integer pageSize) {
         int BuyerId = StpUtil.getLoginIdAsInt();
-        IPage<Order> orders =  orderService.getByBuyerId(pageNum,pageSize,BuyerId);
+        IPage<orderListDTO> orders =  orderService.getByBuyerId(pageNum,pageSize,BuyerId);
 
         return R.success(orders);
     }
@@ -76,6 +87,12 @@ public class OrderController {
         Order order = orderService.getById(orderId);
         order.setStatus(status);
         orderService.updateById(order);
+        if (status.equals("已完成")){
+            User byId = userService.getById(StpUtil.getLoginIdAsInt());
+            byId.setWealth(byId.getWealth().add(order.getPayAmount()));
+            Good byId1 = goodsService.getById(order.getContent());
+            byId1.setSoldAmount(byId1.getSoldAmount() + order.getAmount());
+        }
         return R.success();
     }
 
@@ -155,4 +172,29 @@ public class OrderController {
             return R.error("系统异常，查询失败");
         }
     }
+
+    @RequestMapping("/updateExpressId")
+    public R updateExpressId(@RequestParam Integer orderId,
+                               @RequestParam String expressId) {
+        Order order = orderService.getById(orderId);
+        order.setExpressId(expressId);
+        order.setStatus("已发货");
+        orderService.updateById(order);
+        return R.success();
+    }
+
+    @GetMapping("/order/status-count")
+    public R getOrderStatusCount() {
+        int userId = StpUtil.getLoginIdAsInt();
+        Map<String, Integer> statusCountMap = orderService.countOrdersMapByStatus(userId);
+        return R.success(statusCountMap);
+    }
+
+    @GetMapping("/order/status-countSeller")
+    public R getOrderStatusCountSeller() {
+        int userId = StpUtil.getLoginIdAsInt();
+        Map<String, Integer> statusCountMap = orderService.countOrdersMapByStatusSeller(userId);
+        return R.success(statusCountMap);
+    }
+
 }

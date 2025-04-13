@@ -1,10 +1,10 @@
 package com.example.spba.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.spba.dao.OrderMapper;
+import com.example.spba.domain.dto.orderListDTO;
 import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.ShoppingCart;
@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService{
@@ -60,20 +61,37 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
     @Override
-    public IPage<Order> getBySellerId(Integer pageNum, Integer pageSize, Integer userId) {
-        Page<Order> page = new Page<>(pageNum, pageSize);
-        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Order::getSeller, userId).orderByDesc(Order::getId);
-
-        return orderMapper.selectPage(page, wrapper);
+    public IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId) {
+//        Page<Order> page = new Page<>(pageNum, pageSize);
+//        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.eq(Order::getSeller, userId).orderByDesc(Order::getId);
+//        int offset = (pageNum - 1) * pageSize;
+//        Page<orderListDTO> orderListDTOS = orderMapper.selectBySellerId(offset, pageSize, userId);
+        Page<orderListDTO> page = new Page<>(pageNum, pageSize);
+        return orderMapper.selectBySellerId(page, userId);
+//        return orderListDTOS;
     }
 
     @Override
-    public IPage<Order> getByBuyerId(Integer pageNum, Integer pageSize, Integer buyerId) {
-        Page<Order> page = new Page<>(pageNum, pageSize);
-        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Order::getBuyer, buyerId).orderByDesc(Order::getId);
-
-        return orderMapper.selectPage(page, wrapper);
+    public IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer userId) {
+//        Page<Order> page = new Page<>(pageNum, pageSize);
+//        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.eq(Order::getBuyer, buyerId).orderByDesc(Order::getId);
+//        int offset = (pageNum - 1) * pageSize;
+//        Page<orderListDTO> orderListDTOS = orderMapper.selectByBuyerId(offset, pageSize, userId);
+//        return orderListDTOS;
+        Page<orderListDTO> page = new Page<>(pageNum, pageSize);
+        return orderMapper.selectByBuyerId(page, userId);
     }
+
+    @Override
+    public Map<String, Integer> countOrdersMapByStatus(Integer userId) {
+        return orderMapper.countOrdersMapByStatus(userId);
+    }
+
+    @Override
+    public Map<String, Integer> countOrdersMapByStatusSeller(Integer userId) {
+        return orderMapper.countOrdersMapByStatusSeller(userId);
+    }
+
 }
