@@ -14,6 +14,7 @@ public class Refund {
     @TableField("`desc`")
     private String desc;
     private String reason;
+    private String express;
 
     // Getters and Setters
 }

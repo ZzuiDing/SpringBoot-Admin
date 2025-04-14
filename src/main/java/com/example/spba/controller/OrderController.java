@@ -114,6 +114,7 @@ public class OrderController {
     public R cancelOrder(@RequestParam Integer orderId) {
         Order order = orderService.getById(orderId);
         if(order.getStatus().equals("待支付")) {
+            order.setStatus("已取消");
             orderService.updateById(order);
             return R.success("取消成功");
         }
@@ -198,4 +199,9 @@ public class OrderController {
         return R.success(statusCountMap);
     }
 
+    @RequestMapping("/getOrderById")
+    public R getOrderById(@RequestParam Integer orderId) {
+        Order order = orderService.getById(orderId);
+        return R.success(order);
+    }
 }
