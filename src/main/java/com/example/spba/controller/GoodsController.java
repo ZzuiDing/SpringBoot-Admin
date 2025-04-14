@@ -13,7 +13,9 @@ package com.example.spba.controller;
     import org.springframework.web.bind.annotation.RequestParam;
     import org.springframework.web.bind.annotation.RestController;
 
-    @Validated
+    import java.util.Objects;
+
+@Validated
     @RestController
     @RequestMapping("/goods")
     public class GoodsController {
@@ -132,5 +134,13 @@ package com.example.spba.controller;
                                   @RequestParam(defaultValue = "4") Integer num) {
             IPage<Good> goods = goodsService.getTopSoldGoods(pageNum, pageSize,num);
             return R.success(goods);
+        }
+
+        @RequestMapping("/goodStatus")
+        public R goodStatus(@RequestParam Integer id) {
+            Good byId = goodsService.getById(id);
+            byId.setStatus(Objects.equals(byId.getStatus(), "在售") ?"下架":"在售");
+            goodsService.updateById(byId);
+            return R.success(byId);
         }
     }

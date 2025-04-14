@@ -78,6 +78,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
         // 第一步：先查询出售出数量最多的 num 个商品 id
         QueryWrapper<Good> soldQuery = new QueryWrapper<>();
         soldQuery.select("id")
+                .eq("status","在售")
                 .orderByDesc("sold_amount")
                 .last("LIMIT " + num);
 
@@ -100,6 +101,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
 
         return goodsMapper.selectPage(page, pageQuery);
     }
+
 
 //    @Override
 //    public List<Good> AllListGoods(Integer page, Integer limit) {
