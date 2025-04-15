@@ -46,9 +46,9 @@ public class OrderController {
     private GoodsService goodsService;
 
     @RequestMapping("/create")
-    public R createOrder(@RequestParam List<Integer> CartIds,@RequestParam Integer AddressId) {
+    public R createOrder(@RequestParam List<Integer> CartIds, @RequestParam Integer AddressId) {
         List<Integer> order = orderService.createOrder(CartIds, AddressId);
-        if(!order.isEmpty()) {
+        if (!order.isEmpty()) {
             return R.success(order);
         } else {
             return R.error();
@@ -57,11 +57,9 @@ public class OrderController {
     }
 
     @RequestMapping("/createDirect")
-    public R createDirectOrder(@RequestParam String goodId,
-                                @RequestParam Integer amount,
-                                @RequestParam Integer addressId) {
+    public R createDirectOrder(@RequestParam String goodId, @RequestParam Integer amount, @RequestParam Integer addressId) {
         Integer orderid = orderService.createDirectOrder(goodId, amount, addressId);
-        if(orderid!= null) {
+        if (orderid != null) {
             return R.success(orderid);
         } else {
             return R.error();
@@ -69,25 +67,22 @@ public class OrderController {
     }
 
     @RequestMapping("/getFromSeller")
-    public R getOrder(@RequestParam(defaultValue = "1") Integer pageNum,
-                      @RequestParam(defaultValue = "10") Integer pageSize) {
+    public R getOrder(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize, @RequestParam String status) {
         int SellerId = StpUtil.getLoginIdAsInt();
-        IPage<orderListDTO> orders =  orderService.getBySellerId(pageNum,pageSize,SellerId);
+        IPage<orderListDTO> orders = orderService.getBySellerId(pageNum, pageSize, SellerId, status);
         return R.success(orders);
     }
 
     @RequestMapping("/getFromBuyer")
-    public R getOrderFromBuyer(@RequestParam(defaultValue = "1") Integer pageNum,
-                               @RequestParam(defaultValue = "10") Integer pageSize) {
+    public R getOrderFromBuyer(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize, @RequestParam String status) {
         int BuyerId = StpUtil.getLoginIdAsInt();
-        IPage<orderListDTO> orders =  orderService.getByBuyerId(pageNum,pageSize,BuyerId);
+        IPage<orderListDTO> orders = orderService.getByBuyerId(pageNum, pageSize, BuyerId, status);
 
         return R.success(orders);
     }
 
     @RequestMapping("/UpdateDesc")
-    public R updateDesc(@RequestParam Integer orderId,
-                        @RequestParam String desc) {
+    public R updateDesc(@RequestParam Integer orderId, @RequestParam String desc) {
         Order order = orderService.getById(orderId);
         order.setDesc(desc);
         orderService.updateById(order);
@@ -95,12 +90,11 @@ public class OrderController {
     }
 
     @RequestMapping("/UpdateStatus")
-    public R updateStatus(@RequestParam Integer orderId,
-                          @RequestParam String status) {
+    public R updateStatus(@RequestParam Integer orderId, @RequestParam String status) {
         Order order = orderService.getById(orderId);
         order.setStatus(status);
         orderService.updateById(order);
-        if (status.equals("已完成")){
+        if (status.equals("已完成")) {
             User byId = userService.getById(StpUtil.getLoginIdAsInt());
             byId.setWealth(byId.getWealth().add(order.getPayAmount()));
             Good byId1 = goodsService.getById(order.getContent());
@@ -112,11 +106,10 @@ public class OrderController {
     @RequestMapping("/delete")
     public R deleteOrder(@RequestParam Integer orderId) {
         Order order = orderService.getById(orderId);
-        if(order.getStatus().equals("待支付")||
-                order.getStatus().equals("已取消")) {
+        if (order.getStatus().equals("待支付") || order.getStatus().equals("已取消")) {
             orderService.removeById(orderId);
             return R.success("删除成功");
-        }else {
+        } else {
 //        orderService.removeById(orderId);
             return R.error("删除失败，订单状态不允许删除");
         }
@@ -125,7 +118,7 @@ public class OrderController {
     @RequestMapping("/cancel")
     public R cancelOrder(@RequestParam Integer orderId) {
         Order order = orderService.getById(orderId);
-        if(order.getStatus().equals("待支付")) {
+        if (order.getStatus().equals("待支付")) {
             order.setStatus("已取消");
             orderService.updateById(order);
             return R.success("取消成功");
@@ -134,9 +127,8 @@ public class OrderController {
     }
 
     @RequestMapping("/getOrderList")
-    public R getOrderList(@RequestParam(defaultValue = "1") Integer pageNum,
-                          @RequestParam(defaultValue = "10") Integer pageSize) {
-        List<Order> orders =  orderService.list();
+    public R getOrderList(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
+        List<Order> orders = orderService.list();
         return R.success(orders);
     }
 
@@ -188,8 +180,7 @@ public class OrderController {
     }
 
     @RequestMapping("/updateExpressId")
-    public R updateExpressId(@RequestParam Integer orderId,
-                               @RequestParam String expressId) {
+    public R updateExpressId(@RequestParam Integer orderId, @RequestParam String expressId) {
         Order order = orderService.getById(orderId);
         order.setExpressId(expressId);
         order.setStatus("已发货");

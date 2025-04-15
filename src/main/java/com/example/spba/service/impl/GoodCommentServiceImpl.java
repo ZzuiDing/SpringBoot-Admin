@@ -23,4 +23,9 @@ public class GoodCommentServiceImpl extends ServiceImpl<GoodCommentMapper, GoodC
         return goodCommentMapper.selectPage(page,queryWrapper);
 
     }
+
+    @Override
+    public Double getaverageRating(Integer goodId) {
+        return goodCommentMapper.getaverageRating(goodId);
+    }
 }

@@ -15,9 +15,9 @@ public interface OrderService extends IService<Order> {
     List<Integer> createOrder(List<Integer> CartIds, Integer addressId);
 
 
-    IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId);
+    IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId,String status);
 
-    IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer buyerId);
+    IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer buyerId, String status);
 
 
     Map<String, Integer> countOrdersMapByStatus(Integer userId);

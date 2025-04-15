@@ -11,14 +11,14 @@
         SELECT orders.*, good.name AS GoodName
         FROM orders
                  JOIN good ON orders.content = good.id
-        WHERE orders.seller = #{userId}
+        WHERE orders.seller = #{userId} and orders.status = #{status}
     </select>
 
     <select id="selectByBuyerId" resultType="com.example.spba.domain.dto.orderListDTO">
         SELECT orders.*, good.name AS GoodName
         FROM orders
                  JOIN good ON orders.content = good.id
-        WHERE orders.buyer = #{userId}
+        WHERE orders.buyer = #{userId} and orders.status = #{status}
     </select>
     <!-- Mapper.xml -->
     <select id="countOrdersMapByStatus" resultType="java.util.HashMap">

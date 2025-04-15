@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.spba.domain.entity.GoodComment;
 import com.example.spba.domain.entity.User;
 import com.example.spba.service.GoodCommentService;
+import com.example.spba.service.GoodsService;
 import com.example.spba.service.UserService;
 import com.example.spba.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +29,9 @@ public class GoodCommentController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    GoodsService goodsService;
+
     @RequestMapping("/getByGoodid")
     public R getAll(@RequestParam int goodId, @RequestParam int pageNum, @RequestParam int pageSize) {
         IPage<GoodComment> goodCommentIPage = goodCommentService.selectByGoodId(goodId, pageNum, pageSize);
@@ -37,6 +42,7 @@ public class GoodCommentController {
         return R.success(goodCommentIPage);
     }
 
+    @Transactional
     @RequestMapping("/add")
     public R add(@RequestBody GoodComment goodComment) {
         goodComment.setUserId(StpUtil.getLoginIdAsInt());
@@ -48,6 +54,8 @@ public class GoodCommentController {
         goodComment.setDate(LocalDateTime.now());
 
         boolean result = goodCommentService.save(goodComment);
+        Double rating = goodCommentService.getaverageRating(goodComment.getGoodId());
+        goodsService.update().eq("id", goodComment.getGoodId()).set("rating", rating).update();
         return result ? R.success("添加成功") : R.error("添加失败");
     }
 

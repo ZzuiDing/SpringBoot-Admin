@@ -62,19 +62,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
 
     @Override
-    public IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId) {
+    public IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId, String status) {
 //        Page<Order> page = new Page<>(pageNum, pageSize);
 //        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
 //        wrapper.eq(Order::getSeller, userId).orderByDesc(Order::getId);
 //        int offset = (pageNum - 1) * pageSize;
 //        Page<orderListDTO> orderListDTOS = orderMapper.selectBySellerId(offset, pageSize, userId);
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
-        return orderMapper.selectBySellerId(page, userId);
+        return orderMapper.selectBySellerId(page, userId,status);
 //        return orderListDTOS;
     }
 
     @Override
-    public IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer userId) {
+    public IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer userId, String status) {
 //        Page<Order> page = new Page<>(pageNum, pageSize);
 //        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
 //        wrapper.eq(Order::getBuyer, buyerId).orderByDesc(Order::getId);
@@ -82,7 +82,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //        Page<orderListDTO> orderListDTOS = orderMapper.selectByBuyerId(offset, pageSize, userId);
 //        return orderListDTOS;
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
-        return orderMapper.selectByBuyerId(page, userId);
+        return orderMapper.selectByBuyerId(page, userId,status);
     }
 
     @Override

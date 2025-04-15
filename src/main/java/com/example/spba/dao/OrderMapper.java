@@ -12,10 +12,10 @@ import java.util.Map;
 
 @Mapper
 public interface OrderMapper extends BaseMapper<Order> {
-    IPage<orderListDTO> selectBySellerId(Page<?> page, Integer userId);
+    IPage<orderListDTO> selectBySellerId(Page<?> page, Integer userId, String status);
 
 
-    IPage<orderListDTO> selectByBuyerId(Page<?> page, Integer userId);
+    IPage<orderListDTO> selectByBuyerId(Page<?> page, Integer userId, String status);
 
     @MapKey("status")
     Map<String, Integer> countOrdersMapByStatus(Integer userId);
