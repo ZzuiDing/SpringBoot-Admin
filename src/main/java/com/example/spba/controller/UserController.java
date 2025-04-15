@@ -2,6 +2,9 @@ package com.example.spba.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.spba.domain.dto.UserDTO;
 import com.example.spba.domain.entity.User;
 import com.example.spba.service.UserService;
@@ -120,9 +123,15 @@ public class UserController {
     }
 
     @RequestMapping("/getUserList")
-    public R getUserList() {
-        List<User> list = userService.list();
-        return R.success(list);
+    public R getUserList(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int pageSize) {
+        // 创建分页对象
+        Page<User> userPage = new Page<>(page, pageSize);
+
+        // 查询分页数据
+        IPage<User> resultPage = userService.page(userPage, new QueryWrapper<>());
+
+        // 返回分页数据
+        return R.success(resultPage);
     }
 
     @RequestMapping("/deleteUser")

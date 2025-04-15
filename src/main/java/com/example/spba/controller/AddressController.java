@@ -6,6 +6,7 @@ import com.example.spba.domain.dto.AddressDTO;
 import com.example.spba.domain.entity.Address;
 import com.example.spba.service.AddressService;
 import com.example.spba.utils.R;
+import com.example.spba.utils.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,22 +15,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
-@RestController()
+@RestController
 @RequestMapping("/address")
 public class AddressController {
 
     @Autowired
-    AddressService addressService;
+    private AddressService addressService;
 
+    // 分页查询地址列表
     @RequestMapping("/getAddressListByUserId")
-    public R getAddress(@RequestParam(defaultValue = "1")  int pageNum, @RequestParam(defaultValue = "10") int pageSize) {
+    public R getAddress(@RequestParam(defaultValue = "1") int pageNum,
+                        @RequestParam(defaultValue = "10") int pageSize) {
         int userId = StpUtil.getLoginIdAsInt();
-        IPage<Address> addressList =  addressService.getAddressListByUserId(userId, pageNum, pageSize);
-        return R.success(addressList);
+
+        // 调用分页查询
+        IPage<Address> addressList = addressService.getAddressListByUserId(userId, pageNum, pageSize);
+
+        // 返回分页结果
+        return R.success(new PageResponse<>(addressList.getRecords(), addressList.getTotal()));
     }
 
+    // 新增地址
     @RequestMapping("/addAddress")
-    public R addAddress(@RequestBody() @Validated(AddressDTO.Save.class) AddressDTO address) {
+    public R addAddress(@RequestBody @Validated(AddressDTO.Save.class) AddressDTO address) {
         address.setUserId(StpUtil.getLoginIdAsInt());
         if (addressService.save(address)) {
             return R.success("添加地址成功");
@@ -38,8 +46,9 @@ public class AddressController {
         }
     }
 
+    // 删除地址
     @RequestMapping("/deleteAddress")
-    public R deleteAddress(@RequestParam() int id) {
+    public R deleteAddress(@RequestParam int id) {
         if (addressService.removeById(id)) {
             return R.success("删除地址成功");
         } else {
@@ -47,8 +56,9 @@ public class AddressController {
         }
     }
 
+    // 更新地址
     @RequestMapping("/updateAddress")
-    public R updateAddress(@RequestBody() @Validated(AddressDTO.Update.class) AddressDTO address) {
+    public R updateAddress(@RequestBody @Validated(AddressDTO.Update.class) AddressDTO address) {
         if (addressService.updateById(address)) {
             return R.success("更新地址成功");
         } else {

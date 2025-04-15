@@ -1,9 +1,11 @@
 package com.example.spba.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.spba.dao.OrderMapper;
 import com.example.spba.dao.RefundMapper;
 import com.example.spba.domain.dto.OrderWithRefundVO;
 import com.example.spba.domain.dto.RefundDTO;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -31,6 +34,8 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OrderMapper orderMapper;
     /**
      * 创建退款申请
      *
@@ -100,9 +105,25 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
      * @return 退款列表
      */
     @Override
-    public List<Refund> getByBuyerId(int buyerId, int page, int size) {
-        int offset = (page - 1) * size;
-        return refundMapper.selectByBuyerId(buyerId, offset, size);
+    public IPage<Refund> getByBuyerId(int buyerId, int page, int size) {
+//        int offset = (page - 1) * size;
+//        return refundMapper.selectByBuyerId(buyerId, offset, size);
+        // 1. 查询该买家的所有订单ID
+        List<Integer> orderIds = orderMapper.selectList(
+                new QueryWrapper<Order>().eq("buyer", buyerId)
+        ).stream().map(Order::getId).collect(Collectors.toList());
+
+        // 如果没有订单，直接返回空分页
+        if (orderIds.isEmpty()) {
+            return new Page<>(page, size); // 空结果
+        }
+
+        // 2. 再查询 refund 表中符合条件的记录
+        Page<Refund> pageRequest = new Page<>(page, size);
+        QueryWrapper<Refund> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("order_id", orderIds);
+        return refundMapper.selectPage(pageRequest, queryWrapper);
+//        return refundMapper.selectPage(pageRequest, queryWrapper);
     }
 
     @Override
@@ -119,9 +140,23 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
     }
 
     @Override
-    public List<Refund> getBySellerId(int sellerId, int page, int size) {
-        int offset = (page - 1) * size;
-        return refundMapper.selectBySellerId(sellerId, offset, size);
+    public IPage<Refund> getBySellerId(int sellerId, int page, int size) {
+//        int offset = (page - 1) * size;
+//        return refundMapper.selectBySellerId(sellerId, offset, size);
+        List<Integer> orderIds = orderMapper.selectList(
+                new QueryWrapper<Order>().eq("seller", sellerId)
+        ).stream().map(Order::getId).collect(Collectors.toList());
+
+        // 如果没有订单，直接返回空分页
+        if (orderIds.isEmpty()) {
+            return new Page<>(page, size); // 空结果
+        }
+
+        // 2. 再查询 refund 表中符合条件的记录
+        Page<Refund> pageRequest = new Page<>(page, size);
+        QueryWrapper<Refund> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("order_id", orderIds);
+        return refundMapper.selectPage(pageRequest, queryWrapper);
     }
 
     @Override
