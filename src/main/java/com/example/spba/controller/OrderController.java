@@ -56,6 +56,18 @@ public class OrderController {
 //        return "Order created successfully!";
     }
 
+    @RequestMapping("/createDirect")
+    public R createDirectOrder(@RequestParam String goodId,
+                                @RequestParam Integer amount,
+                                @RequestParam Integer addressId) {
+        Integer orderid = orderService.createDirectOrder(goodId, amount, addressId);
+        if(orderid!= null) {
+            return R.success(orderid);
+        } else {
+            return R.error();
+        }
+    }
+
     @RequestMapping("/getFromSeller")
     public R getOrder(@RequestParam(defaultValue = "1") Integer pageNum,
                       @RequestParam(defaultValue = "10") Integer pageSize) {

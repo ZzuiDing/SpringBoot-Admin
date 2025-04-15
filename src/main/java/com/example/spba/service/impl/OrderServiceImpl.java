@@ -1,5 +1,6 @@
 package com.example.spba.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -92,6 +93,24 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Map<String, Integer> countOrdersMapByStatusSeller(Integer userId) {
         return orderMapper.countOrdersMapByStatusSeller(userId);
+    }
+
+    @Override
+    public Integer createDirectOrder(String goodId, Integer amount, Integer addressId) {
+        try {
+                Order order = new Order();
+                order.setBuyer(StpUtil.getLoginIdAsInt());
+                order.setContent(goodId);
+                order.setSeller(goodService.getById(goodId).getUserId());
+                order.setDate(LocalDateTime.now());
+                order.setAmount(amount);
+                order.setAddressId(addressId);
+                order.setPayAmount(goodService.getById(goodId).getPrice().multiply(BigDecimal.valueOf(amount)));
+                this.save(order); // 保存后，order.getId() 会有值（MyBatis-Plus 会自动回填）
+                return order.getId();
+        } catch (Exception e) {
+            throw new RuntimeException("订单创建失败：" + e.getMessage());
+        }
     }
 
 }

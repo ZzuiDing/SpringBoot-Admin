@@ -1,7 +1,6 @@
 package com.example.spba.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.spba.domain.dto.orderListDTO;
 import com.example.spba.domain.entity.Order;
@@ -24,6 +23,8 @@ public interface OrderService extends IService<Order> {
     Map<String, Integer> countOrdersMapByStatus(Integer userId);
 
     Map<String, Integer> countOrdersMapByStatusSeller(Integer userId);
+
+    Integer createDirectOrder(String goodId, Integer amount, Integer addressId);
 
 //    List<Integer> getIdsByUserId(int sellerid);
 }
