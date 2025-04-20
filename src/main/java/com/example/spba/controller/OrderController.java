@@ -158,6 +158,7 @@ public class OrderController {
                     for (Order order : orders) {
                         // 更新订单状态为已支付
                         order.setStatus("已支付"); // 更新为已支付
+                        order.setPayMethod("支付宝");
                         if (Objects.equals(order.getStatus(), "待支付")) {
                             order.setStatus("已支付"); // 更新为已支付
 //                        order.setPayTime(new Date());

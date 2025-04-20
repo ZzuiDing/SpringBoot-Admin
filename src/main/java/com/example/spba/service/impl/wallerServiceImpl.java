@@ -41,6 +41,7 @@ public class wallerServiceImpl implements wallerService {
             userService.updateById(user);
             for (Order order : orderList) {
                 order.setStatus("已支付");
+                order.setPayMethod("余额支付");
                 orderService.updateById(order);
             }
             return true;
