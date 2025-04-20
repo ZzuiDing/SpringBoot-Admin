@@ -33,6 +33,11 @@
         WHERE seller = #{userId}
         GROUP BY status
     </select>
+    <select id="selectOrderList" resultType="com.example.spba.domain.dto.orderListDTO">
+        SELECT orders.*, good.name AS GoodName
+        FROM orders
+                 JOIN good ON orders.content = good.id
+    </select>
 
 
 </mapper>

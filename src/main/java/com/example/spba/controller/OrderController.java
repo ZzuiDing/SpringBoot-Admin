@@ -128,7 +128,7 @@ public class OrderController {
 
     @RequestMapping("/getOrderList")
     public R getOrderList(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "10") Integer pageSize) {
-        List<Order> orders = orderService.list();
+        IPage<orderListDTO> orders = orderService.getorderLists(pageNum, pageSize);
         return R.success(orders);
     }
 

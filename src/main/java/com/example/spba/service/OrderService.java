@@ -26,5 +26,7 @@ public interface OrderService extends IService<Order> {
 
     Integer createDirectOrder(String goodId, Integer amount, Integer addressId);
 
+    IPage<orderListDTO> getorderLists(Integer pageNum, Integer pageSize);
+
 //    List<Integer> getIdsByUserId(int sellerid);
 }

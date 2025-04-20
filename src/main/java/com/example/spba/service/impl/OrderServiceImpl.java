@@ -113,4 +113,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         }
     }
 
+    @Override
+    public IPage<orderListDTO> getorderLists(Integer pageNum, Integer pageSize) {
+        Page<orderListDTO> page = new Page<>(pageNum, pageSize);
+        return orderMapper.selectOrderList(page);
+    }
+
 }

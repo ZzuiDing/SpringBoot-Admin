@@ -22,4 +22,6 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     @MapKey("status")
     Map<String, Integer> countOrdersMapByStatusSeller(Integer userId);
+
+    IPage<orderListDTO> selectOrderList(Page<orderListDTO> page);
 }

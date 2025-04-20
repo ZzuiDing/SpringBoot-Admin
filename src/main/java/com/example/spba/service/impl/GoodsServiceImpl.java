@@ -51,6 +51,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
         // 第一步：先查询出最新的 num 个商品的 id
         QueryWrapper<Good> idQuery = new QueryWrapper<>();
         idQuery.select("id")
+                .eq("status","在售")
                 .orderByDesc("id")
                 .last("LIMIT " + num);
         List<Good> latestGoods = goodsMapper.selectList(idQuery);
