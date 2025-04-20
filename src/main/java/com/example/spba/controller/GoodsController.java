@@ -131,8 +131,10 @@ package com.example.spba.controller;
         @RequestMapping("/topSoldGoods")
         public R getTopSoldGoods(@RequestParam(defaultValue = "1") Integer pageNum,
                                   @RequestParam(defaultValue = "10") Integer pageSize,
-                                  @RequestParam(defaultValue = "4") Integer num) {
-            IPage<Good> goods = goodsService.getTopSoldGoods(pageNum, pageSize,num);
+                                  @RequestParam(defaultValue = "4") Integer num,
+                                 @RequestParam(defaultValue = "0") String category,
+                                 @RequestParam(defaultValue = "") String query) {
+            IPage<Good> goods = goodsService.getTopSoldGoods(pageNum, pageSize,num,category,query);
             return R.success(goods);
         }
 

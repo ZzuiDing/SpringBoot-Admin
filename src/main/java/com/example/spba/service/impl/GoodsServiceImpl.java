@@ -75,17 +75,20 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
     }
 
     @Override
-    public IPage<Good> getTopSoldGoods(Integer pageNum, Integer pageSize, Integer num) {
-        // 第一步：先查询出售出数量最多的 num 个商品 id
+    public IPage<Good> getTopSoldGoods(Integer pageNum, Integer pageSize, Integer num, String category, String query) {
+        // 第一步：先查出销量最多的 num 个商品 ID（根据是否传入 category 条件动态过滤）
         QueryWrapper<Good> soldQuery = new QueryWrapper<>();
         soldQuery.select("id")
-                .eq("status","在售")
+                .eq("status", "在售")
                 .orderByDesc("sold_amount")
                 .last("LIMIT " + num);
 
+        if (category != null && !category.equals("0") && !category.isEmpty()) {
+            soldQuery.eq("kind_id", category);
+        }
+
         List<Good> topSoldList = goodsMapper.selectList(soldQuery);
 
-        // 提取 id 列表
         List<Integer> idList = topSoldList.stream()
                 .map(Good::getId)
                 .collect(Collectors.toList());
@@ -94,11 +97,15 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
             return new Page<>(pageNum, pageSize); // 返回空页
         }
 
-        // 第二步：分页查询这些商品
+        // 第二步：分页查询这些商品（支持商品名模糊搜索）
         Page<Good> page = new Page<>(pageNum, pageSize);
         QueryWrapper<Good> pageQuery = new QueryWrapper<>();
         pageQuery.in("id", idList)
-                .orderByDesc("sold_amount"); // 保持顺序一致
+                .orderByDesc("sold_amount");
+
+        if (query != null && !query.isEmpty()) {
+            pageQuery.like("name", query);
+        }
 
         return goodsMapper.selectPage(page, pageQuery);
     }
