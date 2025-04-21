@@ -128,4 +128,5 @@ ali-pay:
   gateway-url: ${local.ali-pay.gateway-url}
   notify-url: ${local.ali-pay.notify-url}
   return-url: ${local.ali-pay.return-url}
-
+express:
+  appcode: ${local.express.appcode}

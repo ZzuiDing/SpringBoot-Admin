@@ -4,6 +4,7 @@ import com.aliyun.sts20150401.models.AssumeRoleResponse;
 import com.aliyun.sts20150401.models.AssumeRoleResponseBody;
 import com.aliyun.tea.TeaException;
 import com.aliyun.oss.common.utils.BinaryUtil;
+import com.example.spba.utils.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -11,12 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.example.spba.utils.express.getexpressinfo;
 
 @Slf4j
 @Controller
@@ -243,5 +247,11 @@ public class WebController {
         } catch (Exception e) {
             throw new RuntimeException("Failed to calculate HMAC-SHA256", e);
         }
+    }
+
+    @GetMapping("/express")
+    public R express(@RequestParam String no) {
+        Object getexpressinfo = getexpressinfo(no);
+        return R.success(getexpressinfo);
     }
 }
