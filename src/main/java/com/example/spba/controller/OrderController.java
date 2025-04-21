@@ -97,8 +97,10 @@ public class OrderController {
         if (status.equals("已完成")) {
             User byId = userService.getById(StpUtil.getLoginIdAsInt());
             byId.setWealth(byId.getWealth().add(order.getPayAmount()));
+            userService.updateById(byId);
             Good byId1 = goodsService.getById(order.getContent());
             byId1.setSoldAmount(byId1.getSoldAmount() + order.getAmount());
+            goodsService.updateById(byId1);
         }
         return R.success();
     }
