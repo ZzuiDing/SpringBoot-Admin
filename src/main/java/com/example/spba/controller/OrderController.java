@@ -222,4 +222,10 @@ public class OrderController {
         Order order = orderService.getById(orderId);
         return R.success(order);
     }
+
+    @RequestMapping("/updateOrder")
+    public R updateOrder(@RequestBody Order order) {
+        orderService.updateById(order);
+        return R.success();
+    }
 }
