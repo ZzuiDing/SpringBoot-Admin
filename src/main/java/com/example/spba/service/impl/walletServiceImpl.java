@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class wallerServiceImpl implements wallerService {
+public class walletServiceImpl implements wallerService {
 
     @Autowired
     UserService userService;

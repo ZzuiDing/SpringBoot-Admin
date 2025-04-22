@@ -38,6 +38,11 @@
         FROM orders
                  JOIN good ON orders.content = good.id
     </select>
+    <select id="countOrdersMapByStatusAdmin" resultType="java.util.Map">
+        SELECT status, COUNT(*) AS value
+        FROM orders
+        GROUP BY status
+    </select>
 
 
 </mapper>

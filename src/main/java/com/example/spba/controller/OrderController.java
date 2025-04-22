@@ -205,6 +205,18 @@ public class OrderController {
         return R.success(statusCountMap);
     }
 
+    @GetMapping("/order/status-countAdmin")
+    public R getOrderStatusCountAdmin() {
+        int userId = StpUtil.getLoginIdAsInt();
+        User user = userService.getById(userId);
+        if(user.getRole()!=2){
+            return R.error("没有权限");
+        }
+        Map<String, Integer> statusCountMap = orderService.countOrdersMapByStatusAdmin();
+        return R.success(statusCountMap);
+    }
+
+
     @RequestMapping("/getOrderById")
     public R getOrderById(@RequestParam Integer orderId) {
         Order order = orderService.getById(orderId);

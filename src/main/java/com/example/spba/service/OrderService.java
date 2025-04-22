@@ -28,5 +28,7 @@ public interface OrderService extends IService<Order> {
 
     IPage<orderListDTO> getorderLists(Integer pageNum, Integer pageSize);
 
+    Map<String, Integer> countOrdersMapByStatusAdmin();
+
 //    List<Integer> getIdsByUserId(int sellerid);
 }

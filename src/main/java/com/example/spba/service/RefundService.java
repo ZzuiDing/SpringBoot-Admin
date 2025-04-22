@@ -23,4 +23,6 @@ public interface RefundService extends IService<Refund> {
     boolean acceptRefund(int refundId);
 
     void commit(int refundId);
+
+    void declineRefund(int refundId);
 }

@@ -185,6 +185,19 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         this.updateById(byId);
     }
 
+    @Override
+    public void declineRefund(int refundId) {
+        Refund byId = this.getById(refundId);
+        if (byId == null) {
+            throw new RuntimeException("退款申请不存在");
+        }
+        Order order = orderService.getById(byId.getOrderId());
+        order.setStatus("已完成");
+        orderService.updateById(order);
+        byId.setStatus("已拒绝");
+        this.updateById(byId);
+    }
+
     /**
      * 检查订单是否符合退款条件
      *

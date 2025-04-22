@@ -119,4 +119,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderMapper.selectOrderList(page);
     }
 
+    @Override
+    public Map<String, Integer> countOrdersMapByStatusAdmin() {
+        return orderMapper.countOrdersMapByStatusAdmin();
+    }
+
 }

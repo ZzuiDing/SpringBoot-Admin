@@ -2,6 +2,7 @@ package com.example.spba.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.spba.domain.dto.OrderWithRefundVO;
 import com.example.spba.domain.dto.RefundDTO;
 import com.example.spba.domain.entity.Refund;
@@ -63,6 +64,17 @@ public class RefundController {
         }
     }
 
+    @RequestMapping("/getAllRefundList")
+    public R getAllRefund(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        try {
+            Page<Refund> pageInfo = new Page<>(page, size);
+            return R.success(refundService.page(pageInfo));
+        } catch (Exception e) {
+            log.error("Error fetching refund list: {}", e.getMessage());
+            return R.error("Failed to fetch refund list");
+        }
+    }
+
 
     @RequestMapping("/getRefundListBySellerId")
     public R getRefundListBySellerId(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
@@ -108,6 +120,17 @@ public class RefundController {
             return R.success("Refund canceled successfully");
         }
         catch (Exception e) {
+            log.error("Error canceling refund: {}", e.getMessage());
+            return R.error("Failed to cancel refund");
+        }
+    }
+
+    @RequestMapping("/declineRefund")
+    public R declineRefund(@RequestParam("refundId") int refundId) {
+        try {
+            refundService.declineRefund(refundId);
+            return R.success("Refund canceled successfully");
+        } catch (Exception e) {
             log.error("Error canceling refund: {}", e.getMessage());
             return R.error("Failed to cancel refund");
         }
