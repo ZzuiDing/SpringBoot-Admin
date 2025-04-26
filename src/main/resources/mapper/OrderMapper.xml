@@ -44,5 +44,24 @@
         GROUP BY status
     </select>
 
+    <!-- OrderMapper.xml -->
+    <select id="getRecentSevenDaysOrders" resultType="map">
+        SELECT DATE_FORMAT(date, '%Y-%m-%d') AS date,
+               COUNT(*)                             AS count
+        FROM orders
+        WHERE date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE_FORMAT(date, '%Y-%m-%d')
+        ORDER BY date ASC
+    </select>
+    <select id="getRecentSevenDaysOrdersByUser" resultType="java.util.Map">
+        SELECT DATE_FORMAT(date, '%Y-%m-%d') AS date,
+               COUNT(*)                             AS count
+        FROM orders
+        WHERE date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+          AND seller = #{loginIdAsInt}
+        GROUP BY DATE_FORMAT(date, '%Y-%m-%d')
+        ORDER BY date ASC
+    </select>
+
 
 </mapper>

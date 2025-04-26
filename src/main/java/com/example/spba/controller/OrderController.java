@@ -22,9 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.spba.domain.dto.orderListDTO;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -228,4 +227,34 @@ public class OrderController {
         orderService.updateById(order);
         return R.success();
     }
+
+    @GetMapping("/sevenDays")
+    public R getRecentSevenDaysOrders() {
+        List<Map<String, Object>> list = orderService.getRecentSevenDaysOrders();
+
+        // 补全缺失日期
+        List<Map<String, Object>> result = fillMissingDates(list);
+
+        return R.success(result);
+    }
+
+    private List<Map<String, Object>> fillMissingDates(List<Map<String, Object>> original) {
+        Map<String, Integer> dataMap = original.stream()
+                .collect(Collectors.toMap(
+                        m -> (String) m.get("date"),
+                        m -> ((Number) m.get("count")).intValue()
+                ));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 6; i >= 0; i--) {
+            String date = today.minusDays(i).toString();
+            Map<String, Object> item = new HashMap<>();
+            item.put("date", date);
+            item.put("count", dataMap.getOrDefault(date, 0));
+            result.add(item);
+        }
+        return result;
+    }
+
 }

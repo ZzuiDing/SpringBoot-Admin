@@ -30,5 +30,7 @@ public interface OrderService extends IService<Order> {
 
     Map<String, Integer> countOrdersMapByStatusAdmin();
 
+    List<Map<String, Object>> getRecentSevenDaysOrders();
+
 //    List<Integer> getIdsByUserId(int sellerid);
 }
