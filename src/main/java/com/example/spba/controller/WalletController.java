@@ -4,16 +4,14 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.example.spba.service.wallerService;
 import com.example.spba.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
 @RestController("/wallet")
+@RequestMapping("/wallet")
 public class WalletController {
     // 钱包相关的接口
     // 例如：查询余额、充值、提现等操作

@@ -9,9 +9,11 @@ import com.example.spba.domain.dto.orderListDTO;
 import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.ShoppingCart;
+import com.example.spba.domain.entity.User;
 import com.example.spba.service.GoodsService;
 import com.example.spba.service.OrderService;
 import com.example.spba.service.ShoppingCartService;
+import com.example.spba.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     ShoppingCartService shoppingCartService;
     @Autowired
     GoodsService goodService;
+
+    @Autowired
+    UserService userService;
 
     @Transactional
     @Override
@@ -122,6 +127,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public Map<String, Integer> countOrdersMapByStatusAdmin() {
         return orderMapper.countOrdersMapByStatusAdmin();
+    }
+
+    @Override
+    public List<Map<String, Object>> getRecentSevenDaysOrders() {
+        int loginIdAsInt = StpUtil.getLoginIdAsInt();
+        User user = userService.getById(loginIdAsInt);
+        if(user.getRole() != 2) {
+            return orderMapper.getRecentSevenDaysOrdersByUser(loginIdAsInt); // 或者抛出异常，或者返回一个空列表
+        } else {
+            // 如果是管理员，返回所有用户的最近七天订单
+            return orderMapper.getRecentSevenDaysOrders();
+        }
     }
 
 }

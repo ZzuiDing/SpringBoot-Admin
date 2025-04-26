@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * RestControllerAdvice = ControllerAdvice + ResponseBody
@@ -141,7 +143,21 @@ public class GraceExceptionHandler
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public R handleForeignKeyConstraintViolation(DataIntegrityViolationException ex) {
-        return R.error("删除失败：该种类已被其他数据引用，无法删除。");
+    public R handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        // 如果是外键约束违反
+        if (ex.getCause() instanceof SQLException) {
+            SQLException sqlEx = (SQLException) ex.getCause();
+            if (sqlEx.getSQLState().equals("23000")) { // 错误码23000是一般外键约束违反的SQL状态码
+                return R.error("外键约束错误，数据关联失败！");
+            }
+        }
+
+        // 如果是唯一约束违反
+        if (Objects.requireNonNull(ex.getMessage()).contains("Duplicate entry")) {
+            return R.error("唯一约束错误，数据已存在！");
+        }
+
+        // 默认错误信息
+        return R.error("数据完整性违反，操作失败！");
     }
 }

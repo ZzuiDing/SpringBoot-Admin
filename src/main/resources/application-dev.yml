@@ -130,3 +130,6 @@ ali-pay:
   return-url: ${local.ali-pay.return-url}
 express:
   appcode: ${local.express.appcode}
+jd:
+  appSecret: ${local.jd.appSecret}
+  appKey: ${local.JD.appKey}

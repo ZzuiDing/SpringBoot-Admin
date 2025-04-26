@@ -8,6 +8,7 @@ import com.example.spba.domain.entity.Order;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -27,4 +28,10 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     @MapKey("status")
     Map<String, Integer> countOrdersMapByStatusAdmin();
+
+    @MapKey("date")
+    List<Map<String, Object>> getRecentSevenDaysOrders();
+
+    @MapKey("date")
+    List<Map<String, Object>> getRecentSevenDaysOrdersByUser(int loginIdAsInt);
 }
