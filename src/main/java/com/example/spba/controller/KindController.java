@@ -21,8 +21,9 @@ public class KindController {
 
     @RequestMapping("/getAll")
     public R getAll(@RequestParam(defaultValue = "1") Integer pageNum,
-                    @RequestParam(defaultValue = "10") Integer pageSize) {
-        IPage<Kind> kindIPage = kindService.getList(pageNum,pageSize);
+                    @RequestParam(defaultValue = "10") Integer pageSize,
+                    @RequestParam(required = false, defaultValue = "") String keyword) {
+        IPage<Kind> kindIPage = kindService.getList(pageNum,pageSize,keyword);
         return R.success(kindIPage);
     }
 

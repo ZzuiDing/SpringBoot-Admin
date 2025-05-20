@@ -32,8 +32,9 @@ package com.example.spba.controller;
          */
         @RequestMapping("/ALLGoodsList")
         public R listGoods(@RequestParam(defaultValue = "1") Integer pageNum,
-                           @RequestParam(defaultValue = "10") Integer pageSize) {
-            IPage<Good> goods = goodsService.getGoodList(pageNum, pageSize);
+                           @RequestParam(defaultValue = "10") Integer pageSize,
+                           @RequestParam(required = false, defaultValue = "") String keyword) {
+            IPage<Good> goods = goodsService.getGoodList(pageNum, pageSize,keyword);
             return R.success(goods);
         }
 
@@ -113,10 +114,11 @@ package com.example.spba.controller;
 
         @RequestMapping("/GoodListByUserId")
         public R getGoodListByUserId(@RequestParam(defaultValue = "1") Integer pageNum,
-                                     @RequestParam(defaultValue = "10") Integer pageSize) {
+                                     @RequestParam(defaultValue = "10") Integer pageSize,
+                                     @RequestParam(required = false, defaultValue = "") String keyword) {
 //            IPage<Good> goods = goodsService.getGoodListByUserId(pageNum,pageSize,userId);
             int userId = StpUtil.getLoginIdAsInt();
-            IPage<Good> goodList = goodsService.getGoodListByUserId(pageNum, pageSize, userId);
+            IPage<Good> goodList = goodsService.getGoodListByUserId(pageNum, pageSize, userId,keyword);
             return R.success(goodList);
         }
 

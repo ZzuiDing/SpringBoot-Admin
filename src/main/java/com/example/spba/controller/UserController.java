@@ -123,12 +123,27 @@ public class UserController {
     }
 
     @RequestMapping("/getUserList")
-    public R getUserList(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int pageSize) {
+    public R getUserList(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(required = false, defaultValue = "") String keyword) {
         // 创建分页对象
         Page<User> userPage = new Page<>(page, pageSize);
 
+        // 创建查询条件
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // 如果有关键字，则添加模糊查询条件
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            queryWrapper.and(w ->
+                    w.like("name", keyword)
+                            .or()
+                            .like("email", keyword)
+                            .or()
+                            .like("phone", keyword)
+            );
+        }
+        // 添加排序条件
+        queryWrapper.orderByDesc("id");
+        // 执行查询
         // 查询分页数据
-        IPage<User> resultPage = userService.page(userPage, new QueryWrapper<>());
+        IPage<User> resultPage = userService.page(userPage, queryWrapper);
 
         // 返回分页数据
         return R.success(resultPage);

@@ -9,10 +9,7 @@ import com.example.spba.utils.R;
 import com.example.spba.utils.PageResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
@@ -64,5 +61,14 @@ public class AddressController {
         } else {
             return R.error("更新地址失败");
         }
+    }
+
+    @GetMapping("/searchAddress")
+    public R searchAddress(@RequestParam(required = false, defaultValue = "") String keyword,
+                           @RequestParam(defaultValue = "1") int pageNum,
+                           @RequestParam(defaultValue = "10") int pageSize) {
+        int userId = StpUtil.getLoginIdAsInt();
+        IPage<Address> addressList = addressService.searchAddress(userId, keyword, pageNum, pageSize);
+        return R.success(addressList);
     }
 }

@@ -20,9 +20,21 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
     GoodsMapper goodsMapper;
 
     @Override
-    public IPage<Good> getGoodList(Integer pageNum, Integer pageSize) {
-        Page<Good> page = new Page<>(pageNum, pageSize,true);
-        return goodsMapper.selectPage(page,null);
+    public IPage<Good> getGoodList(Integer pageNum, Integer pageSize, String keyword) {
+        Page<Good> page = new Page<>(pageNum, pageSize, true);
+        LambdaQueryWrapper<Good> wrapper = new LambdaQueryWrapper<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            wrapper.and(w ->
+                    w.like(Good::getName, keyword)
+                            .or()
+                            .like(Good::getDesc, keyword)
+            );
+        }
+
+        wrapper.orderByDesc(Good::getId);
+
+        return goodsMapper.selectPage(page, wrapper);
     }
 
 //    @Override
@@ -37,10 +49,15 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
 ////        return null;
 //    }
     @Override
-    public IPage<Good> getGoodListByUserId(Integer pageNum, Integer pageSize, Integer id) {
+    public IPage<Good> getGoodListByUserId(Integer pageNum, Integer pageSize, Integer id, String keyword) {
     Page<Good> page = new Page<>(pageNum, pageSize);
     LambdaQueryWrapper<Good> wrapper = new LambdaQueryWrapper<>();
-    wrapper.eq(Good::getUserId, id).orderByDesc(Good::getId);
+    wrapper.eq(Good::getUserId, id);
+    if (keyword != null && !keyword.isEmpty()) {
+        wrapper.and(w -> w.like(Good::getName, keyword)
+                .or().like(Good::getDesc, keyword));
+    }
+    wrapper.orderByDesc(Good::getId);
     System.out.println("Created wrapperSegment:,"+wrapper.getSqlSegment());
     return goodsMapper.selectPage(page, wrapper);
 }
