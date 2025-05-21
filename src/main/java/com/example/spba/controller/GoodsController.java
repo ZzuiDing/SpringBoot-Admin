@@ -95,8 +95,11 @@ package com.example.spba.controller;
          * @return 返回搜索页面提示信息
          */
         @RequestMapping("/search")
-        public String searchGoods() {
-            return "搜索商品";
+        public R searchGoods(@RequestParam String keyword,
+                             @RequestParam(defaultValue = "1") Integer pageNum,
+                             @RequestParam(defaultValue = "10") Integer pageSize) {
+            IPage<Good> goodIPage = goodsService.searchGoods(pageNum, pageSize, keyword);
+            return R.success(goodIPage);
         }
 
         //TODO : 商品分类接口

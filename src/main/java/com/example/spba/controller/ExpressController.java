@@ -28,17 +28,18 @@ public class ExpressController {
     ExpressConfig expressConfig;
 
     @GetMapping("/get")
-    public R getExpressInfo(@RequestParam String no) {
+    public R getExpressInfo(@RequestParam String no,@RequestParam(required = false) String phone) {
         // 调用快递查询的逻辑
         // 这里可以调用 express.getexpressinfo(no) 方法
         String host = "https://wuliu.market.alicloudapi.com";// 【1】请求地址 支持http 和 https 及 WEBSOCKET
         String path = "/kdi";  // 【2】后缀
 //        String appcode = "你自己的AppCode"; // 【3】开通服务后 买家中心-查看AppCode
 //        String no = "780098068058";// 【4】请求参数，详见文档描述
+        String nol = no + ":" + (phone.length() >= 4 ? phone.substring(phone.length() - 4) : phone);
         String appcode = expressConfig.getAppcode(); // 【3】开通服务后 买家中心-查看AppCode
         System.out.println("appcode:" + appcode);
         String type = ""; //  【4】请求参数，不知道可不填 95%能自动识别
-        String urlSend = host + path + "?no=" + no + "&type=" + type;  // 【5】拼接请求链接
+        String urlSend = host + path + "?no=" + nol + "&type=" + type;  // 【5】拼接请求链接
         try {
             URL url = new URL(urlSend);
             HttpURLConnection httpURLCon = (HttpURLConnection) url.openConnection();

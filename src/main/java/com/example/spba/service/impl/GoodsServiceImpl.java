@@ -93,40 +93,48 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
 
     @Override
     public IPage<Good> getTopSoldGoods(Integer pageNum, Integer pageSize, Integer num, String category, String query) {
-        // 第一步：先查出销量最多的 num 个商品 ID（根据是否传入 category 条件动态过滤）
-        QueryWrapper<Good> soldQuery = new QueryWrapper<>();
-        soldQuery.select("id")
-                .eq("status", "在售")
-                .orderByDesc("sold_amount")
-                .last("LIMIT " + num);
+        QueryWrapper<Good> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", "在售");
 
         if (category != null && !category.equals("0") && !category.isEmpty()) {
-            soldQuery.eq("kind_id", category);
+            queryWrapper.eq("kind_id", category);
         }
 
-        List<Good> topSoldList = goodsMapper.selectList(soldQuery);
+        if (query != null && !query.isEmpty()) {
+            queryWrapper.like("name", query);
+        }
 
-        List<Integer> idList = topSoldList.stream()
-                .map(Good::getId)
-                .collect(Collectors.toList());
+        // 先查符合条件的，按销量排序，限制前 num 个
+        queryWrapper.orderByDesc("sold_amount").last("LIMIT " + num);
 
-        if (idList.isEmpty()) {
+        List<Good> resultList = goodsMapper.selectList(queryWrapper);
+
+        if (resultList.isEmpty()) {
             return new Page<>(pageNum, pageSize); // 返回空页
         }
 
-        // 第二步：分页查询这些商品（支持商品名模糊搜索）
+        // 再分页这些结果
+        List<Integer> idList = resultList.stream().map(Good::getId).collect(Collectors.toList());
+
         Page<Good> page = new Page<>(pageNum, pageSize);
         QueryWrapper<Good> pageQuery = new QueryWrapper<>();
-        pageQuery.in("id", idList)
-                .orderByDesc("sold_amount");
-
-        if (query != null && !query.isEmpty()) {
-            pageQuery.like("name", query);
-        }
+        pageQuery.in("id", idList).orderByDesc("sold_amount");
 
         return goodsMapper.selectPage(page, pageQuery);
     }
 
+    @Override
+    public IPage<Good> searchGoods(Integer pageNum, Integer pageSize, String keyword) {
+        Page<Good> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Good> wrapper = new LambdaQueryWrapper<>();
+        wrapper.and(w ->
+                w.like(Good::getName, keyword)
+                        .or()
+                        .like(Good::getDesc, keyword)
+        );
+        wrapper.orderByDesc(Good::getId);
+        return goodsMapper.selectPage(page, wrapper);
+    }
 
 //    @Override
 //    public List<Good> AllListGoods(Integer page, Integer limit) {

@@ -13,4 +13,6 @@ public interface GoodsService extends IService<Good> {
     IPage<Good> getNewestGoods(Integer pageNum, Integer pageSize, Integer num);
 
     IPage<Good> getTopSoldGoods(Integer pageNum, Integer pageSize, Integer num, String category, String query);
+
+    IPage<Good> searchGoods(Integer pageNum, Integer pageSize, String keyword);
 }

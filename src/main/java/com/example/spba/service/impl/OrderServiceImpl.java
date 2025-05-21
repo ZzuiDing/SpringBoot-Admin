@@ -10,10 +10,7 @@ import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.ShoppingCart;
 import com.example.spba.domain.entity.User;
-import com.example.spba.service.GoodsService;
-import com.example.spba.service.OrderService;
-import com.example.spba.service.ShoppingCartService;
-import com.example.spba.service.UserService;
+import com.example.spba.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +34,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AddressService addressService;
 
     @Transactional
     @Override
@@ -74,7 +74,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //        int offset = (pageNum - 1) * pageSize;
 //        Page<orderListDTO> orderListDTOS = orderMapper.selectBySellerId(offset, pageSize, userId);
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
-        return orderMapper.selectBySellerId(page, userId,status);
+        IPage<orderListDTO> orderListDTOIPage = orderMapper.selectBySellerId(page, userId, status);
+        orderListDTOIPage.getRecords().forEach(orderListDTO -> {
+            orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
+            orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
+            orderListDTO.setGoodName(goodService.getById(orderListDTO.getContent()).getName());
+            orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
+        });
+        return orderListDTOIPage;
 //        return orderListDTOS;
     }
 
@@ -87,7 +94,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //        Page<orderListDTO> orderListDTOS = orderMapper.selectByBuyerId(offset, pageSize, userId);
 //        return orderListDTOS;
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
-        return orderMapper.selectByBuyerId(page, userId,status);
+        IPage<orderListDTO> orderListDTOIPage = orderMapper.selectByBuyerId(page, userId, status);
+        orderListDTOIPage.getRecords().forEach(orderListDTO -> {
+            orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
+            orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
+            orderListDTO.setGoodName(goodService.getById(orderListDTO.getContent()).getName());
+            orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
+        });
+        return orderListDTOIPage;
     }
 
     @Override
@@ -121,7 +135,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public IPage<orderListDTO> getorderLists(Integer pageNum, Integer pageSize) {
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
-        return orderMapper.selectOrderList(page);
+        IPage<orderListDTO> orderListDTOIPage = orderMapper.selectOrderList(page);
+        orderListDTOIPage.getRecords().forEach(orderListDTO -> {
+            orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
+            orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
+            orderListDTO.setGoodName(goodService.getById(orderListDTO.getContent()).getName());
+            orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
+        });
+        return orderListDTOIPage;
     }
 
     @Override
