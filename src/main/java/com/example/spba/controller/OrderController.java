@@ -11,11 +11,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.User;
+import com.example.spba.service.AddressService;
 import com.example.spba.service.GoodsService;
 import com.example.spba.service.OrderService;
 import com.example.spba.service.UserService;
 import com.example.spba.utils.R;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +45,9 @@ public class OrderController {
 
     @Autowired
     private GoodsService goodsService;
+
+    @Autowired
+    private AddressService addressService;
 
     @RequestMapping("/create")
     public R createOrder(@RequestParam List<Integer> CartIds, @RequestParam Integer AddressId) {
@@ -219,7 +224,13 @@ public class OrderController {
     @RequestMapping("/getOrderById")
     public R getOrderById(@RequestParam Integer orderId) {
         Order order = orderService.getById(orderId);
-        return R.success(order);
+        orderListDTO orderListDTO = new orderListDTO();
+        BeanUtils.copyProperties(order, orderListDTO);
+        orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
+        orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
+        orderListDTO.setGoodName(goodsService.getById(orderListDTO.getContent()).getName());
+        orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
+        return R.success(orderListDTO);
     }
 
     @RequestMapping("/updateOrder")
