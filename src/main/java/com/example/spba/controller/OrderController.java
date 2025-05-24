@@ -7,7 +7,6 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.User;
@@ -22,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.example.spba.domain.dto.orderListDTO;
-import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,10 +84,18 @@ public class OrderController {
         return R.success(orders);
     }
 
-    @RequestMapping("/UpdateDesc")
-    public R updateDesc(@RequestParam Integer orderId, @RequestParam String desc) {
+    @RequestMapping("/UpdateBuyerDesc")
+    public R updateBuyerDesc(@RequestParam Integer orderId, @RequestParam String desc) {
         Order order = orderService.getById(orderId);
-        order.setDesc(desc);
+        order.setBuyerDesc(desc);
+        orderService.updateById(order);
+        return R.success();
+    }
+
+    @RequestMapping("/UpdateSellerDesc")
+    public R updateSellerDesc(@RequestParam Integer orderId, @RequestParam String desc) {
+        Order order = orderService.getById(orderId);
+        order.setSellerDesc(desc);;
         orderService.updateById(order);
         return R.success();
     }
@@ -98,6 +105,17 @@ public class OrderController {
         Order order = orderService.getById(orderId);
         order.setStatus(status);
         orderService.updateById(order);
+        switch (status) {
+            case "已发货":
+                order.setExpressTime(LocalDateTime.now());
+                break;
+            case "已收货":
+                order.setReceiveTime(LocalDateTime.now());
+                break;
+            case "已取消":
+                order.setCancelTime(LocalDateTime.now());
+                break;
+        }
         if (status.equals("已完成")) {
             User byId = userService.getById(StpUtil.getLoginIdAsInt());
             byId.setWealth(byId.getWealth().add(order.getPayAmount()));
@@ -126,6 +144,7 @@ public class OrderController {
         Order order = orderService.getById(orderId);
         if (order.getStatus().equals("待支付")) {
             order.setStatus("已取消");
+            order.setCancelTime(LocalDateTime.now());
             orderService.updateById(order);
             return R.success("取消成功");
         }
@@ -167,6 +186,7 @@ public class OrderController {
                         order.setPayMethod("支付宝");
                         if (Objects.equals(order.getStatus(), "待支付")) {
                             order.setStatus("已支付"); // 更新为已支付
+                            order.setPayTime(LocalDateTime.now());
 //                        order.setPayTime(new Date());
 //                        order.setPayTradeNo(response.getTradeNo());
                             orderService.updateById(order);
@@ -191,6 +211,7 @@ public class OrderController {
         Order order = orderService.getById(orderId);
         order.setExpressId(expressId);
         order.setStatus("已发货");
+        order.setExpressTime(LocalDateTime.now());
         orderService.updateById(order);
         return R.success();
     }
@@ -252,7 +273,7 @@ public class OrderController {
     private List<Map<String, Object>> fillMissingDates(List<Map<String, Object>> original) {
         Map<String, Integer> dataMap = original.stream()
                 .collect(Collectors.toMap(
-                        m -> (String) m.get("date"),
+                        m -> (String) m.get("createdTime"),
                         m -> ((Number) m.get("count")).intValue()
                 ));
 
@@ -261,7 +282,7 @@ public class OrderController {
         for (int i = 6; i >= 0; i--) {
             String date = today.minusDays(i).toString();
             Map<String, Object> item = new HashMap<>();
-            item.put("date", date);
+            item.put("createdTime", date);
             item.put("count", dataMap.getOrDefault(date, 0));
             result.add(item);
         }

@@ -50,7 +50,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setContent(String.valueOf(shoppingCart.getGoodId()));
                 Good good = goodService.getById(shoppingCart.getGoodId());
                 order.setSeller(good.getUserId());
-                order.setDate(LocalDateTime.now());
+                order.setCreatedTime(LocalDateTime.now());
                 order.setAmount(shoppingCart.getNum());
                 order.setAddressId(addressId);
                 order.setPayAmount(good.getPrice().multiply(BigDecimal.valueOf(shoppingCart.getNum())));
@@ -121,7 +121,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 order.setBuyer(StpUtil.getLoginIdAsInt());
                 order.setContent(goodId);
                 order.setSeller(goodService.getById(goodId).getUserId());
-                order.setDate(LocalDateTime.now());
+                order.setCreatedTime(LocalDateTime.now());
                 order.setAmount(amount);
                 order.setAddressId(addressId);
                 order.setPayAmount(goodService.getById(goodId).getPrice().multiply(BigDecimal.valueOf(amount)));

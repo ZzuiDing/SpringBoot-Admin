@@ -17,15 +17,18 @@ public class Order {
     private Integer buyer;
     private Integer seller;
     private String content;
-    @TableField("`desc`")
-    private String desc;
-    private LocalDateTime date;
+    private String buyerDesc;
+    private String sellerDesc;
+    private LocalDateTime createdTime;
+    private LocalDateTime payTime;
+    private LocalDateTime expressTime;
+    private LocalDateTime receiveTime;
+    private LocalDateTime cancelTime;
     private String status;
     private String payMethod;
     private BigDecimal payAmount;
     private String expressId;
     private Integer amount;
     private Integer addressId;
-
     // Getters and Setters
 }
