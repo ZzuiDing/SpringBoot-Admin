@@ -8,4 +8,8 @@ public interface AddressService extends IService<Address> {
     IPage<Address> getAddressListByUserId(int userId, int pageNum, int pageSize);
 
     IPage<Address> searchAddress(int userId, String keyword, int pageNum, int pageSize);
+
+    Address getDefaultAddress(int userId);
+
+    Boolean setDefaultAddress(int addressId);
 }

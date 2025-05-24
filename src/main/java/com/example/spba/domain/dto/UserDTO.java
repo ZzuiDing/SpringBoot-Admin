@@ -20,7 +20,7 @@ public class UserDTO extends User {
     @NotBlank(message = "用户名不能为空", groups = Save.class)
     private String name;
 
-    private String address;
+    private Integer address;
 
     @Email(message = "邮箱格式不正确")
     private String email;

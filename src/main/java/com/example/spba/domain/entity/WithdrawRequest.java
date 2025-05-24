@@ -12,6 +12,6 @@ public class WithdrawRequest {
     private Integer userId;
     private String status;
     private BigDecimal amount;
-
+    private Integer phone;
     // Getters and Setters
 }

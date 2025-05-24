@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.spba.dao.AddressMapper;
 import com.example.spba.domain.entity.Address;
+import com.example.spba.domain.entity.User;
 import com.example.spba.service.AddressService;
+import com.example.spba.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
 
     @Autowired
     private AddressMapper addressMapper; // 修正变量命名
+
+    @Autowired
+    private UserService userService; // 添加 UserService 依赖
 
     @Override
     public IPage<Address> getAddressListByUserId(int userId, int pageNum, int pageSize) {
@@ -58,5 +63,25 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
             log.error("搜索地址失败", e);
             return new Page<>();
         }
+    }
+
+    @Override
+    public Address getDefaultAddress(int userId) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            log.warn("用户不存在: userId={}", userId);
+            return null;
+        }
+//        this.getById(user.getAddress());
+        return this.getById(user.getAddress());
+    }
+
+    @Override
+    public Boolean setDefaultAddress(int addressId) {
+        User user = userService.getById(StpUtil.getLoginIdAsInt());
+        user.setAddress(addressId);
+        userService.updateById(user);
+        // 更新用户的默认地址
+        return true;
     }
 }

@@ -15,7 +15,7 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String name;
-    private String address;
+    private Integer address;
     private String email;
     private String gender;
     private String phone;

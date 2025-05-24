@@ -71,4 +71,25 @@ public class AddressController {
         IPage<Address> addressList = addressService.searchAddress(userId, keyword, pageNum, pageSize);
         return R.success(addressList);
     }
+
+    @GetMapping("/getDefaultAddress")
+    public R getDefaultAddress() {
+        int userId = StpUtil.getLoginIdAsInt();
+        Address address = addressService.getDefaultAddress(userId);
+        if (address != null) {
+            return R.success(address);
+        } else {
+            return R.error("没有默认地址");
+        }
+    }
+
+    @PostMapping("/setDefaultAddress")
+    public R setDefaultAddress(@RequestParam int addressId) {
+        if(addressService.setDefaultAddress(addressId)){
+            return R.success("设置默认地址成功");
+        }
+        else {
+            return R.error("设置默认地址失败");
+        }
+    }
 }
