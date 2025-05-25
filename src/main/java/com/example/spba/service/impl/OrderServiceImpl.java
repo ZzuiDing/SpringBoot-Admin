@@ -13,8 +13,9 @@ import com.example.spba.domain.entity.User;
 import com.example.spba.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService{
+public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     @Autowired
     OrderMapper orderMapper;
@@ -48,7 +49,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 ShoppingCart shoppingCart = shoppingCartService.getById(cartId);
                 order.setBuyer(shoppingCart.getUserId());
                 order.setContent(String.valueOf(shoppingCart.getGoodId()));
-                Good good = goodService.getById(shoppingCart.getGoodId());
+
+//                Good good = goodService.getById(shoppingCart.getGoodId());
+                Good good = goodService.findByIdForUpdate(shoppingCart.getGoodId());
+
+                if (good.getCount() < shoppingCart.getNum()) {
+                    throw new RuntimeException("库存不足");
+                }
+
+                good.setCount(good.getCount() - shoppingCart.getNum());
+                int i = goodService.updateStock(good.getId(), good.getCount());// 更新库存
+//                goodService.updateById(good);
                 order.setSeller(good.getUserId());
                 order.setCreatedTime(LocalDateTime.now());
                 order.setAmount(shoppingCart.getNum());
@@ -114,19 +125,28 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return orderMapper.countOrdersMapByStatusSeller(userId);
     }
 
+    @Transactional
     @Override
     public Integer createDirectOrder(String goodId, Integer amount, Integer addressId) {
         try {
-                Order order = new Order();
-                order.setBuyer(StpUtil.getLoginIdAsInt());
-                order.setContent(goodId);
-                order.setSeller(goodService.getById(goodId).getUserId());
-                order.setCreatedTime(LocalDateTime.now());
-                order.setAmount(amount);
-                order.setAddressId(addressId);
-                order.setPayAmount(goodService.getById(goodId).getPrice().multiply(BigDecimal.valueOf(amount)));
-                this.save(order); // 保存后，order.getId() 会有值（MyBatis-Plus 会自动回填）
-                return order.getId();
+            Order order = new Order();
+            order.setBuyer(StpUtil.getLoginIdAsInt());
+            order.setContent(goodId);
+            Good byId = goodService.findByIdForUpdate(Integer.valueOf(goodId));
+
+            if (byId.getCount() < amount) {
+                throw new RuntimeException("库存不足");
+            }
+
+            byId.setCount(byId.getCount() - amount);
+            int i = goodService.updateStock(byId.getId(), byId.getCount());// 更新库存
+            order.setSeller(byId.getUserId());
+            order.setCreatedTime(LocalDateTime.now());
+            order.setAmount(amount);
+            order.setAddressId(addressId);
+            order.setPayAmount(byId.getPrice().multiply(BigDecimal.valueOf(amount)));
+            this.save(order); // 保存后，order.getId() 会有值（MyBatis-Plus 会自动回填）
+            return order.getId();
         } catch (Exception e) {
             throw new RuntimeException("订单创建失败：" + e.getMessage());
         }
@@ -154,7 +174,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<Map<String, Object>> getRecentSevenDaysOrders() {
         int loginIdAsInt = StpUtil.getLoginIdAsInt();
         User user = userService.getById(loginIdAsInt);
-        if(user.getRole() != 2) {
+        if (user.getRole() != 2) {
             return orderMapper.getRecentSevenDaysOrdersByUser(loginIdAsInt); // 或者抛出异常，或者返回一个空列表
         } else {
             // 如果是管理员，返回所有用户的最近七天订单

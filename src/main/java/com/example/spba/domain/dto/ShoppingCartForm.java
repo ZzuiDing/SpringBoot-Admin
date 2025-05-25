@@ -8,4 +8,5 @@ public class ShoppingCartForm extends ShoppingCart {
     private String Name;
     private String picture;
     private Float price;
+    private Integer count;
 }

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.example.spba.domain.dto.orderListDTO;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -95,7 +95,7 @@ public class OrderController {
     @RequestMapping("/UpdateSellerDesc")
     public R updateSellerDesc(@RequestParam Integer orderId, @RequestParam String desc) {
         Order order = orderService.getById(orderId);
-        order.setSellerDesc(desc);;
+        order.setSellerDesc(desc);
         orderService.updateById(order);
         return R.success();
     }
@@ -139,12 +139,16 @@ public class OrderController {
         }
     }
 
+    @Transactional
     @RequestMapping("/cancel")
     public R cancelOrder(@RequestParam Integer orderId) {
         Order order = orderService.getById(orderId);
         if (order.getStatus().equals("待支付")) {
             order.setStatus("已取消");
             order.setCancelTime(LocalDateTime.now());
+            Good byId = goodsService.getById(order.getContent());
+            byId.setCount(byId.getCount() + order.getAmount());
+            goodsService.updateById(byId);
             orderService.updateById(order);
             return R.success("取消成功");
         }

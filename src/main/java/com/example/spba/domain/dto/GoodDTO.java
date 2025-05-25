@@ -29,6 +29,7 @@ public class GoodDTO {
     private String keyWord;
     private String desc;
     private String status;
+    private Integer count;
 
     @Min(value = 0, message = "已售数量不能小于0")
     private Integer soldAmount;

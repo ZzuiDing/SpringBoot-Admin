@@ -22,5 +22,6 @@ public class Good {
     private String status;
     private Integer soldAmount;
     private Double rating;
+    private Integer count;
     // Getters and Setters
 }

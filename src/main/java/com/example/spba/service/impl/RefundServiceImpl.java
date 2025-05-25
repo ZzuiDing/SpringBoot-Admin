@@ -9,9 +9,11 @@ import com.example.spba.dao.OrderMapper;
 import com.example.spba.dao.RefundMapper;
 import com.example.spba.domain.dto.OrderWithRefundVO;
 import com.example.spba.domain.dto.RefundDTO;
+import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.Refund;
 import com.example.spba.domain.entity.User;
+import com.example.spba.service.GoodsService;
 import com.example.spba.service.OrderService;
 import com.example.spba.service.RefundService;
 import com.example.spba.service.UserService;
@@ -36,6 +38,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
     @Autowired
     private OrderMapper orderMapper;
+
+    @Autowired
+    private GoodsService goodService;
     /**
      * 创建退款申请
      *
@@ -64,6 +69,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
             User byId1 = userService.getById(order.getSeller());
             byId1.setWealth(byId1.getWealth().subtract(order.getPayAmount()));
             userService.updateById(byId1);
+            Good byId2 = goodService.getById(order.getContent());
+            byId2.setCount(byId2.getCount() + order.getAmount());
+            goodService.updateById(byId2);
         } else {
             Refund refund = new Refund();
             refund.setOrderId(refundDTO.getOrderId());
@@ -172,19 +180,40 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
         return true;
     }
 
-    @Override
-    public void commit(int refundId) {
-        Refund byId = this.getById(refundId);
-        Order byId1 = orderService.getById(byId.getOrderId());
-        User byId2 = userService.getById(byId1.getBuyer());
-        byId.setStatus("已完成");
-        byId1.setStatus("已取消");
-        byId2.setWealth(byId2.getWealth().add(byId1.getPayAmount()));
-        orderService.updateById(byId1);
-        userService.updateById(byId2);
-        this.updateById(byId);
+//    @Override
+//    public void commit(int refundId) {
+//        Refund byId = this.getById(refundId);
+//        Order byId1 = orderService.getById(byId.getOrderId());
+//        User byId2 = userService.getById(byId1.getBuyer());
+//        byId.setStatus("已完成");
+//        byId1.setStatus("已取消");
+//        byId2.setWealth(byId2.getWealth().add(byId1.getPayAmount()));
+//        orderService.updateById(byId1);
+//        userService.updateById(byId2);
+//        this.updateById(byId);
+//    }
+// RefundServiceImpl.java
+
+@Override
+public void commit(int refundId) {
+    Refund byId = this.getById(refundId);
+    Order byId1 = orderService.getById(byId.getOrderId());
+    User byId2 = userService.getById(byId1.getBuyer());
+    byId.setStatus("已完成");
+    byId1.setStatus("已取消");
+    byId2.setWealth(byId2.getWealth().add(byId1.getPayAmount()));
+    orderService.updateById(byId1);
+    userService.updateById(byId2);
+
+    // 回补商品库存
+    Good good = goodService.getById(byId1.getContent());
+    if (good != null) {
+        good.setCount(good.getCount() + byId1.getAmount());
+        goodService.updateById(good);
     }
 
+    this.updateById(byId);
+}
     @Override
     public void declineRefund(int refundId) {
         Refund byId = this.getById(refundId);

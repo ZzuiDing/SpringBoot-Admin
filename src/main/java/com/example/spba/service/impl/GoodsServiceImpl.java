@@ -136,6 +136,17 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper,Good> implements G
         return goodsMapper.selectPage(page, wrapper);
     }
 
+    @Override
+    public Good findByIdForUpdate(Integer goodId) {
+
+        return goodsMapper.findByIdForUpdate(goodId);
+    }
+
+    @Override
+    public int updateStock(Integer id, Integer count) {
+        return goodsMapper.updateStock(id, count);
+    }
+
 //    @Override
 //    public List<Good> AllListGoods(Integer page, Integer limit) {
 //        List<Good> list = goodsMapper.selectAll();

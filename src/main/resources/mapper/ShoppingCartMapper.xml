@@ -11,7 +11,8 @@
         SELECT sc.*,
                g.price,
                g.name,
-               g.picture
+               g.picture,
+               g.count
         FROM shopping_cart sc
                  INNER JOIN
              good g ON sc.good_id = g.id

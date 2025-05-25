@@ -150,4 +150,10 @@ package com.example.spba.controller;
             goodsService.updateById(byId);
             return R.success(byId);
         }
+
+        @RequestMapping("/getGoodCount")
+        public R getGoodCount(@RequestParam() Integer goodId) {
+            int count = goodsService.getById(goodId).getCount();
+            return R.success(count);
+        }
     }
