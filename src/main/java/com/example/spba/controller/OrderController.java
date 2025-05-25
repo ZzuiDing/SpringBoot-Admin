@@ -10,10 +10,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.User;
-import com.example.spba.service.AddressService;
-import com.example.spba.service.GoodsService;
-import com.example.spba.service.OrderService;
-import com.example.spba.service.UserService;
+import com.example.spba.service.*;
 import com.example.spba.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +44,10 @@ public class OrderController {
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private WalletHistoryService walletHistoryService;
+
 
     @RequestMapping("/create")
     public R createOrder(@RequestParam List<Integer> CartIds, @RequestParam Integer AddressId) {
@@ -123,6 +124,8 @@ public class OrderController {
             Good byId1 = goodsService.getById(order.getContent());
             byId1.setSoldAmount(byId1.getSoldAmount() + order.getAmount());
             goodsService.updateById(byId1);
+            // 这里可以添加钱包历史记录的创建逻辑
+            walletHistoryService.createWalletHistory(byId.getId(), "IN", order.getPayAmount(), byId.getWealth(), "商品收入");
         }
         return R.success();
     }
@@ -196,6 +199,10 @@ public class OrderController {
                             orderService.updateById(order);
                         }
                     }
+                    // 更新钱包记录
+
+
+
                     System.out.println("调用成功");
                     return R.success("订单已支付，当前状态：" + tradeStatus);
                 } else {

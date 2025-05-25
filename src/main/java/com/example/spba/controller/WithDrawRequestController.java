@@ -3,9 +3,11 @@ package com.example.spba.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.spba.dao.WallerHistoryMapper;
 import com.example.spba.domain.entity.User;
 import com.example.spba.domain.entity.WithdrawRequest;
 import com.example.spba.service.UserService;
+import com.example.spba.service.WalletHistoryService;
 import com.example.spba.service.WithDrawRequsetService;
 import com.example.spba.service.impl.UserServiceImpl;
 import com.example.spba.utils.R;
@@ -23,6 +25,9 @@ public class WithDrawRequestController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private WalletHistoryService walletHistoryService;
 
     @GetMapping("/getRequests")
     public R getRequests(@RequestParam Integer pageNum,
@@ -62,6 +67,8 @@ public class WithDrawRequestController {
              User user = userService.getById(withdrawRequest.getUserId());
              user.setWealth(user.getWealth().subtract(withdrawRequest.getAmount()));
              userService.updateById(user);
+            // Create a wallet history record for the withdrawal
+            walletHistoryService.createWalletHistory(user.getId(), "OUT", withdrawRequest.getAmount(), user.getWealth(), "提现");
             return R.success("Withdrawal request confirmed successfully");
         } catch (Exception e) {
             return R.error("Failed to confirm withdrawal request: " + e.getMessage());

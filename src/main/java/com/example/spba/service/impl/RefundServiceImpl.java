@@ -13,10 +13,7 @@ import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.Refund;
 import com.example.spba.domain.entity.User;
-import com.example.spba.service.GoodsService;
-import com.example.spba.service.OrderService;
-import com.example.spba.service.RefundService;
-import com.example.spba.service.UserService;
+import com.example.spba.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +38,9 @@ public class RefundServiceImpl extends ServiceImpl<RefundMapper, Refund> impleme
 
     @Autowired
     private GoodsService goodService;
+
+    @Autowired
+    private WalletHistoryService walletHistoryService;
     /**
      * 创建退款申请
      *
@@ -211,6 +211,14 @@ public void commit(int refundId) {
         good.setCount(good.getCount() + byId1.getAmount());
         goodService.updateById(good);
     }
+
+    walletHistoryService.createWalletHistory(
+            byId2.getId(),
+            "IN",
+            byId1.getPayAmount(),
+            byId2.getWealth(),
+            "退款到账"
+    );
 
     this.updateById(byId);
 }
