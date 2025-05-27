@@ -45,21 +45,23 @@
     </select>
 
     <!-- OrderMapper.xml -->
-    <select id="getRecentSevenDaysOrders" resultType="map">
-        SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+    <select id="getRecentSevenDaysOrders" resultType="com.example.spba.domain.dto.DateCount">
+        SELECT DATE_FORMAT(created_time, '%Y-%m-%d') AS date,
                COUNT(*)                             AS count
         FROM orders
-        WHERE create_time >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
-        GROUP BY DATE_FORMAT(date, '%Y-%m-%d')
+        WHERE created_time >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        and created_time is not null
+        GROUP BY DATE_FORMAT(created_time, '%Y-%m-%d')
         ORDER BY date ASC
     </select>
-    <select id="getRecentSevenDaysOrdersByUser" resultType="java.util.Map">
-        SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+    <select id="getRecentSevenDaysOrdersByUser" resultType="com.example.spba.domain.dto.DateCount">
+        SELECT DATE_FORMAT(created_time, '%Y-%m-%d') AS date,
                COUNT(*)                             AS count
         FROM orders
-        WHERE create_time >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        WHERE created_time >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+          and created_time is not null
           AND seller = #{loginIdAsInt}
-        GROUP BY DATE_FORMAT(date, '%Y-%m-%d')
+        GROUP BY DATE_FORMAT(created_time, '%Y-%m-%d')
         ORDER BY date ASC
     </select>
 

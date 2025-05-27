@@ -7,6 +7,7 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.spba.domain.entity.Address;
 import com.example.spba.domain.entity.Good;
 import com.example.spba.domain.entity.Order;
 import com.example.spba.domain.entity.User;
@@ -259,12 +260,29 @@ public class OrderController {
         Order order = orderService.getById(orderId);
         orderListDTO orderListDTO = new orderListDTO();
         BeanUtils.copyProperties(order, orderListDTO);
+
+        // 设置卖家和买家名字
         orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
         orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
+
+        // 设置商品名
         orderListDTO.setGoodName(goodsService.getById(orderListDTO.getContent()).getName());
-        orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
+
+        // 设置完整的地址信息
+        Address address = addressService.getById(orderListDTO.getAddressId());
+        if (address != null) {
+            String fullAddress = String.format("收货人：%s，手机号：%s，地址：%s",
+                    address.getName(),
+                    address.getPhone(),
+                    address.getAddress());
+            orderListDTO.setAddress(fullAddress);
+        } else {
+            orderListDTO.setAddress("地址信息不存在");
+        }
+
         return R.success(orderListDTO);
     }
+
 
     @RequestMapping("/updateOrder")
     public R updateOrder(@RequestBody Order order) {
@@ -285,7 +303,7 @@ public class OrderController {
     private List<Map<String, Object>> fillMissingDates(List<Map<String, Object>> original) {
         Map<String, Integer> dataMap = original.stream()
                 .collect(Collectors.toMap(
-                        m -> (String) m.get("createdTime"),
+                        m -> (String) m.get("date"),
                         m -> ((Number) m.get("count")).intValue()
                 ));
 
@@ -294,7 +312,7 @@ public class OrderController {
         for (int i = 6; i >= 0; i--) {
             String date = today.minusDays(i).toString();
             Map<String, Object> item = new HashMap<>();
-            item.put("createdTime", date);
+            item.put("date", date);
             item.put("count", dataMap.getOrDefault(date, 0));
             result.add(item);
         }

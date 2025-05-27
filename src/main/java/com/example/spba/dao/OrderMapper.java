@@ -3,6 +3,7 @@ package com.example.spba.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.spba.domain.dto.DateCount;
 import com.example.spba.domain.dto.orderListDTO;
 import com.example.spba.domain.entity.Order;
 import org.apache.ibatis.annotations.MapKey;
@@ -29,9 +30,9 @@ public interface OrderMapper extends BaseMapper<Order> {
     @MapKey("status")
     Map<String, Integer> countOrdersMapByStatusAdmin();
 
-    @MapKey("date")
-    List<Map<String, Object>> getRecentSevenDaysOrders();
 
-    @MapKey("date")
-    List<Map<String, Object>> getRecentSevenDaysOrdersByUser(int loginIdAsInt);
+    List<DateCount> getRecentSevenDaysOrders();
+
+
+    List<DateCount> getRecentSevenDaysOrdersByUser(int loginIdAsInt);
 }

@@ -5,12 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.spba.dao.OrderMapper;
+import com.example.spba.domain.dto.DateCount;
 import com.example.spba.domain.dto.orderListDTO;
-import com.example.spba.domain.entity.Good;
-import com.example.spba.domain.entity.Order;
-import com.example.spba.domain.entity.ShoppingCart;
-import com.example.spba.domain.entity.User;
+import com.example.spba.domain.entity.*;
 import com.example.spba.service.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,41 +79,40 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     public IPage<orderListDTO> getBySellerId(Integer pageNum, Integer pageSize, Integer userId, String status) {
-//        Page<Order> page = new Page<>(pageNum, pageSize);
-//        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-//        wrapper.eq(Order::getSeller, userId).orderByDesc(Order::getId);
-//        int offset = (pageNum - 1) * pageSize;
-//        Page<orderListDTO> orderListDTOS = orderMapper.selectBySellerId(offset, pageSize, userId);
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
         IPage<orderListDTO> orderListDTOIPage = orderMapper.selectBySellerId(page, userId, status);
-        orderListDTOIPage.getRecords().forEach(orderListDTO -> {
-            orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
-            orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
-            orderListDTO.setGoodName(goodService.getById(orderListDTO.getContent()).getName());
-            orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
-        });
-        return orderListDTOIPage;
-//        return orderListDTOS;
+
+        return getOrderListDTOIPage(orderListDTOIPage);
     }
 
     @Override
     public IPage<orderListDTO> getByBuyerId(Integer pageNum, Integer pageSize, Integer userId, String status) {
-//        Page<Order> page = new Page<>(pageNum, pageSize);
-//        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
-//        wrapper.eq(Order::getBuyer, buyerId).orderByDesc(Order::getId);
-//        int offset = (pageNum - 1) * pageSize;
-//        Page<orderListDTO> orderListDTOS = orderMapper.selectByBuyerId(offset, pageSize, userId);
-//        return orderListDTOS;
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
         IPage<orderListDTO> orderListDTOIPage = orderMapper.selectByBuyerId(page, userId, status);
+
+        return getOrderListDTOIPage(orderListDTOIPage);
+    }
+
+    @NotNull
+    private IPage<orderListDTO> getOrderListDTOIPage(IPage<orderListDTO> orderListDTOIPage) {
         orderListDTOIPage.getRecords().forEach(orderListDTO -> {
             orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
             orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
             orderListDTO.setGoodName(goodService.getById(orderListDTO.getContent()).getName());
-            orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
+
+            Address address = addressService.getById(orderListDTO.getAddressId());
+            if (address != null) {
+                String fullAddress = String.format("收货人：%s，手机号：%s，地址：%s",
+                        address.getName(), address.getPhone(), address.getAddress());
+                orderListDTO.setAddress(fullAddress);
+            } else {
+                orderListDTO.setAddress("地址信息不存在");
+            }
         });
+
         return orderListDTOIPage;
     }
+
 
     @Override
     public Map<String, Integer> countOrdersMapByStatus(Integer userId) {
@@ -156,14 +155,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public IPage<orderListDTO> getorderLists(Integer pageNum, Integer pageSize) {
         Page<orderListDTO> page = new Page<>(pageNum, pageSize);
         IPage<orderListDTO> orderListDTOIPage = orderMapper.selectOrderList(page);
-        orderListDTOIPage.getRecords().forEach(orderListDTO -> {
-            orderListDTO.setSellerName(userService.getById(orderListDTO.getSeller()).getName());
-            orderListDTO.setBuyerName(userService.getById(orderListDTO.getBuyer()).getName());
-            orderListDTO.setGoodName(goodService.getById(orderListDTO.getContent()).getName());
-            orderListDTO.setAddress(addressService.getById(orderListDTO.getAddressId()).getAddress());
-        });
-        return orderListDTOIPage;
+        return getOrderListDTOIPage(orderListDTOIPage);
     }
+
 
     @Override
     public Map<String, Integer> countOrdersMapByStatusAdmin() {
@@ -174,12 +168,26 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public List<Map<String, Object>> getRecentSevenDaysOrders() {
         int loginIdAsInt = StpUtil.getLoginIdAsInt();
         User user = userService.getById(loginIdAsInt);
+
+        List<DateCount> dateCountList;
         if (user.getRole() != 2) {
-            return orderMapper.getRecentSevenDaysOrdersByUser(loginIdAsInt); // 或者抛出异常，或者返回一个空列表
+            dateCountList = orderMapper.getRecentSevenDaysOrdersByUser(loginIdAsInt);
         } else {
-            // 如果是管理员，返回所有用户的最近七天订单
-            return orderMapper.getRecentSevenDaysOrders();
+            dateCountList = orderMapper.getRecentSevenDaysOrders();
+            System.out.println(dateCountList.toString());
         }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (DateCount dc : dateCountList) {
+            if (dc.getDate() != null) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("date", dc.getDate());
+                item.put("count", dc.getCount());
+                result.add(item);
+            }
+        }
+        System.out.println("result = " + result);
+        return result;
     }
 
 }
