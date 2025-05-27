@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,6 +49,7 @@ public class walletServiceImpl implements wallerService {
             for (Order order : orderList) {
                 order.setStatus("已支付");
                 order.setPayMethod("余额支付");
+                order.setPayTime(LocalDateTime.now());
                 orderService.updateById(order);
             }
             // 这里可以添加钱包历史记录的创建逻辑

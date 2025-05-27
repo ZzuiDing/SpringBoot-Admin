@@ -105,7 +105,6 @@ public class OrderController {
     public R updateStatus(@RequestParam Integer orderId, @RequestParam String status) {
         Order order = orderService.getById(orderId);
         order.setStatus(status);
-        orderService.updateById(order);
         switch (status) {
             case "已发货":
                 order.setExpressTime(LocalDateTime.now());
@@ -126,7 +125,9 @@ public class OrderController {
             goodsService.updateById(byId1);
             // 这里可以添加钱包历史记录的创建逻辑
             walletHistoryService.createWalletHistory(byId.getId(), "IN", order.getPayAmount(), byId.getWealth(), "商品收入");
+            order.setReceiveTime(LocalDateTime.now());
         }
+        orderService.updateById(order);
         return R.success();
     }
 
@@ -191,13 +192,13 @@ public class OrderController {
                         // 更新订单状态为已支付
                         order.setStatus("已支付"); // 更新为已支付
                         order.setPayMethod("支付宝");
-                        if (Objects.equals(order.getStatus(), "待支付")) {
+//                        if (Objects.equals(order.getStatus(), "待支付")) {
                             order.setStatus("已支付"); // 更新为已支付
                             order.setPayTime(LocalDateTime.now());
 //                        order.setPayTime(new Date());
 //                        order.setPayTradeNo(response.getTradeNo());
                             orderService.updateById(order);
-                        }
+//                        }
                     }
                     // 更新钱包记录
 
