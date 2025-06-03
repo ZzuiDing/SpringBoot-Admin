@@ -35,6 +35,7 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
         Page<Address> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Address> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Address::getUserId, userId);
+        System.out.println(queryWrapper.getSqlSegment());
 
         try {
             return addressMapper.selectPage(page, queryWrapper);
@@ -54,8 +55,10 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, Address> impl
                     .or().like("name", keyword)  // 模糊查询收件人
                     .or().like("phone", keyword) // 模糊查询电话
                     .or().like("`desc`", keyword) // 模糊查询备注
-                    .eq("user_id", loginIdAsInt); // 只查询当前用户的地址
+                    ; // 只查询当前用户的地址
         }
+        queryWrapper.eq("user_id", userId)
+                .or().eq("user_id", loginIdAsInt); // 允许查询当前登录用户的地址
         Page<Address> page = new Page<>(pageNum, pageSize);
         try {
             return addressMapper.selectPage(page, queryWrapper);

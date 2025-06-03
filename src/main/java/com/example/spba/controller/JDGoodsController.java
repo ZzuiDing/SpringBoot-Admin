@@ -1,6 +1,7 @@
 package com.example.spba.controller;
 
 import com.example.spba.utils.JDGoodInform;
+import com.example.spba.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,7 +15,7 @@ public class JDGoodsController {
     private JDGoodInform jdGoodInform;
 
     @RequestMapping("/getJDGoodInform")
-    public String getJDGoodInform(@RequestParam String goodId) throws Exception {
-        return jdGoodInform.getJDGoodInform(goodId);
+    public R getJDGoodInform(@RequestParam String goodId) throws Exception {
+        return R.success(jdGoodInform.getJDGoodInform(goodId));
     }
 }

@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.Name;
+
 @Slf4j
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService {
@@ -85,5 +87,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             return false;
         }
         return true;
+    }
+
+    @Override
+    public User getByname(String Name) {
+        return userMapper.getByname(Name);
     }
 }

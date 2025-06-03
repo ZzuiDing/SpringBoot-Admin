@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -141,7 +142,8 @@ public class WebController {
     }
 
     @GetMapping("/get_post_signature_for_oss_upload")
-    public ResponseEntity<Map<String, String>> getPostSignatureForOssUpload() throws Exception {
+    @ResponseBody
+    public R getPostSignatureForOssUpload() throws Exception {
         log.info("获取到的临时凭证");
         AssumeRoleResponseBody.AssumeRoleResponseBodyCredentials sts_data = getCredential();
 
@@ -227,7 +229,7 @@ public class WebController {
         response.put("dir", upload_dir);
         response.put("host", host);
         // 返回带有状态码 200 (OK) 的 ResponseEntity，返回给Web端，进行PostObject操作
-        return ResponseEntity.ok(response);
+        return R.success(response);
     }
 
     public static byte[] hmacsha256(byte[] key, String data) {

@@ -58,6 +58,12 @@ public class UserController {
     @Transactional
     @PostMapping("/register")
     public R register(@RequestBody @Validated(UserDTO.Save.class) UserDTO userDTO) {
+        if(userDTO.getName() == null || userDTO.getPasswd() == null) {
+            return R.error("用户名或密码不能为空");
+        }
+        if(userService.getByname(userDTO.getName()).getName() != null) {
+            return R.error("用户名已存在");
+        }
         if (userService.register(userDTO)) {
             log.info("注册成功");
             return R.success("注册成功");

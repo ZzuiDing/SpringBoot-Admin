@@ -27,4 +27,7 @@
     <select id="selectById" resultType="com.example.spba.domain.entity.User">
         SELECT * FROM users WHERE id = #{id}
     </select>
+    <select id="getByname" resultType="com.example.spba.domain.entity.User">
+        SELECT * FROM users WHERE name = #{name}
+    </select>
 </mapper>

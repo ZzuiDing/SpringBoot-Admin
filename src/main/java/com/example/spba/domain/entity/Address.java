@@ -14,6 +14,7 @@ public class Address {
     private String phone;
     @TableField("`desc`")
     private String desc;
+    @TableField("user_id")
     private Integer userId;
 
     // Getters and Setters
